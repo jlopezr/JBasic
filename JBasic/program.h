@@ -22,9 +22,15 @@ typedef struct {
 } Line;
 
 Line* findLine(unsigned int lineNumber);
+
 void addLine(char instruction);
 void addLine_int(char instruction, unsigned int n);
 void addLine_string(char instruction, char* str);
+void endLine();
+void addExpr_int(char opcode, int n);
+void addExpr_op(char opcode);
+void addExpr_string(char opcode, char* str);
+
 void run();
 void list_opcodes();
 

@@ -62,7 +62,7 @@ char* get_string_var(char* name) {
     if(v==NULL) {
         return 0;
     } else {
-        return &(v->value);
+        return (char*)&(v->value);
     }
 }
 

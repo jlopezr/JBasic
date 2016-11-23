@@ -25,7 +25,7 @@ Line* findLine(unsigned int lineNumber) {
         if(line->lineNumber==lineNumber) {
             return line;
         }
-        tmp = tmp + sizeof(unsigned int)+ sizeof(char)+ line->length;
+        tmp = tmp + sizeof(unsigned int) + sizeof(char) + line->length;
     }
     return NULL;
 }
@@ -41,6 +41,7 @@ void list_opcodes_line(Line* line) {
         printf("%s ",keywords[opcode].name);
         switch(keywords[opcode].parameters) {
             case PARAM_VOID:
+                i=i+1;
                 break;
             case PARAM_NUM:
                 i=i+1;
@@ -51,14 +52,15 @@ void list_opcodes_line(Line* line) {
             case PARAM_VAR:
                 i=i+1;
                 p2 = (char *)&(line->code[i]);
-                len = strlen(p2);
+                len = (int)strlen(p2);
                 printf("%s ", p2);
                 i=i+len;
                 break;
             default:
-                printf("<OPCODES PARAMETERS NOT IMPLEMENTED>");
+                printf("<OPCODES PARAMETERS NOT IMPLEMENTED. SKIP 1 OPCODE>");
+                i=i+1;
         }
-        i=i+1;
+        
     }
 }
 
@@ -70,17 +72,20 @@ void list_opcodes() {
         printf("%u (size: %u) ", line->lineNumber, line->length);
         list_opcodes_line(line);
         printf("\r\n");
-        tmp = tmp + sizeof(unsigned int)+ sizeof(char)+ line->length;
-    }  
+        tmp = tmp + sizeof(unsigned int) + sizeof(char) + line->length;
+    }
 }
+
+Line* lastLine;
 
 void addLine(char instruction) {
     Line* line = (Line*)eop;
+    lastLine = line;
     lastLineNumber = lastLineNumber + 10;
     line->lineNumber = lastLineNumber;
     line->length = 1;
     line->code[0] = instruction;
-    eop = eop + sizeof(unsigned int)+ sizeof(char)+ line->length;
+    eop = eop + sizeof(unsigned int) + sizeof(char) + line->length;
 }
 
 void addLine_int(char instruction, unsigned int n) {
@@ -91,7 +96,7 @@ void addLine_int(char instruction, unsigned int n) {
     line->code[0] = instruction;
     unsigned int* p = (unsigned int *)&(line->code[1]);
     *p = n;
-    eop = eop + sizeof(unsigned int)+ sizeof(char)+ line->length;
+    eop = eop + sizeof(unsigned int) + sizeof(char) + line->length;
 }
 
 void addLine_string(char instruction, char* str) {
@@ -102,48 +107,100 @@ void addLine_string(char instruction, char* str) {
     char* p = (char *)&(line->code[1]);
     char* q = stpcpy(p, str);
     line->length = 2 + (q-p);
-    eop = eop + sizeof(unsigned int)+ sizeof(char)+ line->length;
+    eop = eop + sizeof(unsigned int)+ sizeof(char) + line->length;
+}
+
+void endLine() {
+    lastLine->length = (eop - (char*)lastLine) - sizeof(unsigned int) - sizeof(char);
+}
+
+void addExpr_int(char opcode, int n) {
+    *eop = opcode;
+    int* p = (int *)(eop+1);
+    *p = n;
+    eop = eop + sizeof(char) + sizeof(int);
+}
+
+void addExpr_op(char opcode) {
+    *eop = opcode;
+    eop = eop + sizeof(char);
+}
+
+void addExpr_string(char opcode, char* str) {
+    *eop = opcode;
+    eop++;
+    char* q = stpcpy(eop, str);
+    eop = eop + sizeof(char) + (q-eop);
 }
 
 unsigned char doTrace = 0;
 
+
+//TODO Multi-instruction lines
+// hacer un bucle que vaya incrementando i (posicion del opcode) hasta lon de linea
+// hacer que el pc sea la siguiente instruccion
 void run() {
     unsigned char end = 0;
     
     pc = sop;
     while(pc<eop && !end) {
         Line* line = (Line*)pc;
-        Keyword k = keywords[line->code[0]];
-        instr_impl* impl = k.impl;
+        int i=0;
         
-        if(doTrace) {
-            //printf("[%d %ld ", line->lineNumber, pc-sop);
-            printf("[%d ", line->lineNumber);
-        }
-        
-        if(impl==0) {
-            printf("OPCODE Not known in line %d\r\n", line->lineNumber);
-            break;
-        } else {
-            char result = impl(line);
-
+        while(i<line->length && !end) {
+            
+            Keyword k = keywords[line->code[i]];
+            instr_impl* impl = k.impl;
+            
             if(doTrace) {
-                printf(" %d]", result);
+                //printf("[%d %ld ", line->lineNumber, pc-sop);
+                printf("[%d ", line->lineNumber);
             }
             
-            switch(result) {
-                case ERR_OK:
-                    pc = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
-                    break;
-                case ERR_OK_JUMP:
-                    break;
-                case ERR_OK_END:
-                    end = 1;
-                    break;
-                default:
-                    printf("ERROR %s at line %d\r\n", errors[result], line->lineNumber);
-                    end = 1;
+            if(impl==0) {
+                printf("OPCODE Not known in line %d\r\n", line->lineNumber);
+                break;
+            } else {
+                char result = impl(line);
+                
+                if(doTrace) {
+                    printf(" %d]", result);
+                }
+                
+                switch(result) {
+                    case ERR_OK:
+                        switch(k.parameters) {
+                            case PARAM_VOID:
+                                i=i+1;
+                                break;
+                            case PARAM_NUM:
+                                i=i+1+sizeof(unsigned int);
+                                break;
+                            case PARAM_VAR:
+                                i=i+1;
+                                char* p = (char *)&(line->code[i]);
+                                //TODO try recover this info from instruction execution
+                                i=i+(int)strlen(p);
+                                break;
+                            default:
+                                printf("<OPCODES PARAMETERS NOT IMPLEMENTED. SKIP 1 OPCODE>");
+                                i=i+1;
+                        }
+                        break;
+                    case ERR_OK_JUMP:
+                        break;
+                    case ERR_OK_END:
+                        end = 1;
+                        break;
+                    default:
+                        printf("ERROR %s at line %d\r\n", errors[result], line->lineNumber);
+                        end = 1;
+                }
             }
         }
+        
+        //Instead of jumping to the next line, the code pointer is already on the new line
+        //pc = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
+        pc = (char *)&(line->code[i]);
     }
 }

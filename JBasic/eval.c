@@ -7,40 +7,16 @@
 //
 
 #include "eval.h"
-
-//"2 3 +"
-
-#define ATOM_INT    0
-#define ATOM_OP     1
-
-#define OP_ADD      0
-#define OP_SUB      1
-#define OP_MUL      2
-#define OP_DIV      3
-
-
-typedef struct {
-    unsigned char type;
-    union {
-        int integer;
-        unsigned char operation;
-    };
-} Atom;
-
-#define STACK_MAX   64
-
-typedef struct {
-    Atom stack[STACK_MAX];
-    unsigned char stack_pos;
-} Stack;
+#include "instructions.h"
+#include "errors.h"
 
 void stack_init(Stack* s) {
     s->stack_pos = 0;
 }
 
 int push(Stack* s, Atom a) {
-    if(s->stack_pos==STACK_MAX-1) {
-        printf("Stack invalid\r\n");
+    if(s->stack_pos==STACK_MAX) {
+        printf("Push. Stack overflow\r\n");
         return -1;
     } else {
         s->stack[s->stack_pos++] = a;
@@ -53,7 +29,17 @@ int peek(Stack* s, Atom* atom) {
         *atom = s->stack[s->stack_pos-1];
         return 0;
     } else {
-        printf("Stack invalid\r\n");
+        printf("Peek. Stack empty\r\n");
+        return -1;
+    }
+}
+
+int pop(Stack* s, Atom* atom) {
+    if(peek(s, atom)==0) {
+        s->stack_pos--;
+        return 0;
+    } else {
+        printf("Pop. Stack underflow\r\n");
         return -1;
     }
 }
@@ -65,32 +51,18 @@ void print_stack(Stack* s) {
         if(type == ATOM_INT) {
             printf("%d", s->stack[i].integer);
         } else if(type == ATOM_OP) {
-            switch(s->stack[i].operation) {
-                case OP_ADD:
-                    printf("+");
-                    break;
-                case OP_SUB:
-                    printf("-");
-                    break;
-                case OP_MUL:
-                    printf("*");
-                    break;
-                case OP_DIV:
-                    printf("/");
-                    break;
+            instr_impl* op = s->stack[i].operation;
+            if( op == _add) {
+                printf("+");
+            } else if(op == _sub) {
+                printf("-");
+            } else if(op == _mul) {
+                printf("*");
+            } else if(op == _div) {
+                printf("/");
             }
         }
         printf("\r\n");
-    }
-}
-
-int pop(Stack* s, Atom* atom) {
-    if(peek(s, atom)==0) {
-        s->stack_pos--;
-        return 0;
-    } else {
-        printf("Stack invalid\r\n");
-        return -1;
     }
 }
 
@@ -102,18 +74,41 @@ Stack eval_stack;
 Stack o_stack;
 Stack op_stack;
 
-int main2();
-int main4();
-
-int mainNOEJECUTAR() {
-    char* input = "2+3*2";
-    char types[32];
-    printf("%s\r\n", input);
+char rpn_eval(char* expr, Line* line) {
+    char* opcode = expr;
     
-    main2();
-    return 0;
+    stack_init(&eval_stack);
+    
+    while(*opcode != END_EXPR) {
+        //TODO Expression check in keywords
+        
+        Keyword k = keywords[*opcode];
+        instr_impl* impl = k.impl;
+        
+        if(impl==0) {
+            printf("EXPRESSION OPCODE Not known in line %d\r\n", line->lineNumber);
+            return ERR_BAD_SYNTAX;
+        } else {
+            char result = impl(line);
+            switch(result) {
+                case ERR_OK:
+                    break;
+                default:
+                    printf("RETURN CODE NOT EXPECTED");
+                    return ERR_BAD_SYNTAX;
+            }
+            opcode++;
+        }
+        printf("RESULT OF EVAL\r\n");
+        print_stack(&eval_stack);
+        printf("------------------\r\n");
+    }
+    
+    return ERR_OK;
 }
 
+
+/*
 int main2() {
     Atom op1, op2, op3;
     
@@ -157,7 +152,7 @@ int main2() {
     
     print_stack(&o_stack);
     
-    main4();
+    //main4();
     
     return 0;
 }
@@ -219,3 +214,4 @@ int main4() {
     printf("RESULT %d\r\n", op1.integer);
     return 0;
 }
+*/

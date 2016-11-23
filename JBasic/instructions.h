@@ -24,6 +24,15 @@ char _dec(Line* line);
 char _print(Line* line);
 char _gosub(Line* line);
 char _return(Line* line);
+
+char _int_constant(Line* line);
+char _var(Line* line);
+char _add(Line* line);
+char _sub(Line* line);
+char _mul(Line* line);
+char _div(Line* line);
+char _eval(Line* line);
+
 char _not_implemented(Line* line);
 
 #endif /* instructions_h */

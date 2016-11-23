@@ -15,7 +15,7 @@ int cmpfunc(const void * a, const void * b)
     return ( *(int*)a - *(int*)b );
 }
 
-int test_bsearch_basic ()
+char* test_bsearch_basic ()
 {
     int values[] = { 5, 20, 29, 32, 63 };
     int *item;

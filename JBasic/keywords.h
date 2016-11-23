@@ -66,10 +66,21 @@ ENTRY(NEXT,     0, PARAM_VAR_OPT,   _not_implemented)   \
 ENTRY(IF,       0, PARAM_EXPR,      _not_implemented)   \
 ENTRY(THEN,     0, PARAM_VOID,      _not_implemented)   \
 ENTRY(ELSE,     0, PARAM_VOID,      _not_implemented)   \
+ENTRY(ENDIF,    0, PARAM_VOID,      _not_implemented)   \
+ENTRY(INT_K,    0, PARAM_NUM,       _int_constant)      \
+ENTRY(VAR,      0, PARAM_VAR,       _var)               \
+ENTRY(ADD,      0, PARAM_VOID,      _add)               \
+ENTRY(SUB,      0, PARAM_VOID,      _sub)               \
+ENTRY(MUL,      0, PARAM_VOID,      _mul)               \
+ENTRY(DIV,      0, PARAM_VOID,      _div)               \
+ENTRY(END_EXPR, 0, PARAM_VOID,      _not_implemented)   \
+ENTRY(EVAL,     0, PARAM_EXPR,      _eval)              \
 ENTRY(TEST,     0, PARAM_VOID,      _test)              \
 ENTRY(ZERO,     0, PARAM_VAR,       _zero)              \
 ENTRY(INC,      0, PARAM_VAR,       _inc)               \
 ENTRY(DEC,      0, PARAM_VAR,       _dec)
+
+// int_k -> div for making expressions
 
 enum Keyword {
     KEYWORD_TABLE(KT_EXPAND_AS_ENUMERATION)

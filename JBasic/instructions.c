@@ -10,6 +10,7 @@
 #include "keywords.h"
 #include "errors.h"
 #include "sym.h"
+#include "eval.h"
 #include <strings.h>
 
 char _end(Line* line) {
@@ -25,8 +26,6 @@ char _test(Line* line) {
     printf("TEST\r\n");
     return ERR_OK;
 }
-
-//TODO remove line number here at put it at error
 
 char _goto(Line* line) {
     unsigned int* p = (unsigned int *)&(line->code[1]);
@@ -79,13 +78,13 @@ char _list(Line* line) {
 }
 
 char _zero(Line* line) {
-    char* name = &(line->code[1]);
+    char* name = (char*)&(line->code[1]);
     return set_int_var(name, 0);
 }
 
 char _inc(Line* line) {
     printf("INC\r\n");
-    char* name = &(line->code[1]);
+    char* name = (char*)&(line->code[1]);
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -99,7 +98,7 @@ char _inc(Line* line) {
 
 char _dec(Line* line) {
     printf("DEC\r\n");
-    char* name = &(line->code[1]);
+    char* name = (char*)&(line->code[1]);
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -112,7 +111,7 @@ char _dec(Line* line) {
 }
 
 char _print(Line* line) {
-    char* name = &(line->code[1]);
+    char* name = (char*)&(line->code[1]);
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -154,3 +153,93 @@ char _return(Line* line) {
     
 }
 
+char _int_constant(Line* line) {
+    return ERR_OK;
+}
+
+char _var(Line* line) {
+    return ERR_OK;
+}
+
+//TODO reuse code for multiple eval operations
+char _add(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    int result = atom1.integer + atom2.integer;
+    atom1.integer = result;
+    
+    push(&eval_stack, atom1);
+    
+    return ERR_OK;
+}
+
+char _sub(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    int result = atom1.integer - atom2.integer;
+    atom1.integer = result;
+    
+    push(&eval_stack, atom1);
+    
+    return ERR_OK;
+}
+
+char _mul(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    int result = atom1.integer * atom2.integer;
+    atom1.integer = result;
+    
+    push(&eval_stack, atom1);
+    
+    return ERR_OK;
+}
+
+char _div(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    if(atom2.integer == 0) {
+        return ERR_DIV_ZERO;
+    }
+    
+    int result = atom1.integer / atom2.integer;
+    atom1.integer = result;
+    
+    push(&eval_stack, atom1);
+    
+    return ERR_OK;
+}
+
+char _eval(Line* line) {
+    // Skips the opcode and continues decoding the expression.
+    pc = pc+1;
+    return ERR_OK_JUMP;
+}
