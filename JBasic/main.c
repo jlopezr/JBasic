@@ -34,22 +34,21 @@ void parse(char* input) {
     }
 }
 
-// Interpreter
 int main(int argc, const char * argv[]) {
     
-    /*
     addLine(EVAL);
-    addExpr_int(INT_K, 1234);
-    addExpr_int(INT_K, 4567);
+    addExpr_int(INT_K, 1);
+    addExpr_int(INT_K, 2);
     addExpr_op(ADD);
+    addExpr_op(END_EXPR);
     endLine();
-    */
     
+    /*
     addLine(TEST);
     addExpr_op(TEST);
     addExpr_op(TEST);
     endLine();
-    
+    */
 
     /*
     addLine_string(ZERO, "VAR");

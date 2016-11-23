@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0D1015431CE8CCD4007BB306 /* bsearch_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1015411CE8CCD4007BB306 /* bsearch_test.c */; };
 		0D1015461CE8E0C4007BB306 /* eval.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1015441CE8E0C4007BB306 /* eval.c */; };
+		0D86A15E1DE49F32004A16A7 /* eval_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D86A15C1DE49F32004A16A7 /* eval_test.c */; };
 		0DC2E4311CDF94B400B9C82D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2E4301CDF94B400B9C82D /* main.c */; };
 		0DC2E4391CDFDD6300B9C82D /* heapsort.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2E4371CDFDD6300B9C82D /* heapsort.c */; };
 		0DC418071DE3911B00EDA7BA /* sym.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC418051DE3911B00EDA7BA /* sym.c */; };
@@ -17,6 +18,7 @@
 		0DC418131DE3ABDA00EDA7BA /* keywords.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC418111DE3ABDA00EDA7BA /* keywords.c */; };
 		0DC418161DE3AE7400EDA7BA /* instructions.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC418141DE3AE7400EDA7BA /* instructions.c */; };
 		0DC418181DE3D88400EDA7BA /* errors.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC418171DE3D88400EDA7BA /* errors.c */; };
+		0DEDBF091DE64DC500435665 /* minunit.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DEDBF081DE64DC500435665 /* minunit.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +37,7 @@
 		0D1015411CE8CCD4007BB306 /* bsearch_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bsearch_test.c; path = JBasic/bsearch_test.c; sourceTree = SOURCE_ROOT; };
 		0D1015441CE8E0C4007BB306 /* eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = eval.c; sourceTree = "<group>"; };
 		0D1015451CE8E0C4007BB306 /* eval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eval.h; sourceTree = "<group>"; };
+		0D86A15C1DE49F32004A16A7 /* eval_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = eval_test.c; sourceTree = "<group>"; };
 		0DC2E42D1CDF94B400B9C82D /* JBasic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = JBasic; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DC2E4301CDF94B400B9C82D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		0DC2E4371CDFDD6300B9C82D /* heapsort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = heapsort.c; sourceTree = "<group>"; };
@@ -51,6 +54,7 @@
 		0DC418141DE3AE7400EDA7BA /* instructions.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = instructions.c; sourceTree = "<group>"; };
 		0DC418151DE3AE7400EDA7BA /* instructions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instructions.h; sourceTree = "<group>"; };
 		0DC418171DE3D88400EDA7BA /* errors.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = errors.c; sourceTree = "<group>"; };
+		0DEDBF081DE64DC500435665 /* minunit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minunit.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,7 @@
 				0D1015411CE8CCD4007BB306 /* bsearch_test.c */,
 				0DC418171DE3D88400EDA7BA /* errors.c */,
 				0DC4180A1DE3A41D00EDA7BA /* errors.h */,
+				0D86A15C1DE49F32004A16A7 /* eval_test.c */,
 				0D1015441CE8E0C4007BB306 /* eval.c */,
 				0D1015451CE8E0C4007BB306 /* eval.h */,
 				0DC2E4371CDFDD6300B9C82D /* heapsort.c */,
@@ -95,6 +100,7 @@
 				0DC418111DE3ABDA00EDA7BA /* keywords.c */,
 				0DC418121DE3ABDA00EDA7BA /* keywords.h */,
 				0DC2E4301CDF94B400B9C82D /* main.c */,
+				0DEDBF081DE64DC500435665 /* minunit.c */,
 				0DC418011DE38BE700EDA7BA /* minunit.h */,
 				0DC4180E1DE3A82400EDA7BA /* program.c */,
 				0DC4180F1DE3A82400EDA7BA /* program.h */,
@@ -163,6 +169,7 @@
 			files = (
 				0DC418101DE3A82400EDA7BA /* program.c in Sources */,
 				0DC2E4311CDF94B400B9C82D /* main.c in Sources */,
+				0DEDBF091DE64DC500435665 /* minunit.c in Sources */,
 				0DC418161DE3AE7400EDA7BA /* instructions.c in Sources */,
 				0DC2E4391CDFDD6300B9C82D /* heapsort.c in Sources */,
 				0DC418181DE3D88400EDA7BA /* errors.c in Sources */,
@@ -171,6 +178,7 @@
 				0DC418091DE399D200EDA7BA /* sym_test.c in Sources */,
 				0D1015431CE8CCD4007BB306 /* bsearch_test.c in Sources */,
 				0D1015461CE8E0C4007BB306 /* eval.c in Sources */,
+				0D86A15E1DE49F32004A16A7 /* eval_test.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

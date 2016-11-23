@@ -2,8 +2,7 @@
 //  minunit.h
 //  JBasic
 //
-//  Created by Juan López Rubio on 21/11/16.
-//  Copyright © 2016 Juan López Rubio. All rights reserved.
+//  From http://www.jera.com/techinfo/jtns/jtn002.html
 //
 
 #ifndef minunit_h

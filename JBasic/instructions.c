@@ -28,7 +28,7 @@ char _test(Line* line) {
 }
 
 char _goto(Line* line) {
-    unsigned int* p = (unsigned int *)&(line->code[1]);
+    unsigned int* p = (unsigned int *)pc;
     Line* target = findLine(*p);
     if(target==0) {
         return ERR_LINE_NOT_EXIST;
@@ -78,13 +78,13 @@ char _list(Line* line) {
 }
 
 char _zero(Line* line) {
-    char* name = (char*)&(line->code[1]);
+    char* name = (char*)pc;
     return set_int_var(name, 0);
 }
 
 char _inc(Line* line) {
     printf("INC\r\n");
-    char* name = (char*)&(line->code[1]);
+    char* name = (char*)pc;
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -98,7 +98,7 @@ char _inc(Line* line) {
 
 char _dec(Line* line) {
     printf("DEC\r\n");
-    char* name = (char*)&(line->code[1]);
+    char* name = (char*)pc;
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -111,7 +111,7 @@ char _dec(Line* line) {
 }
 
 char _print(Line* line) {
-    char* name = (char*)&(line->code[1]);
+    char* name = (char*)pc;
     int value;
     
     //TODO be able to get the pointer to the symbol table
@@ -126,14 +126,15 @@ char _print(Line* line) {
 char* calls[NUM_GOSUB_CALLS];
 int number_of_gosub_calls = 0;
 
+//TODO GOSUB must be the last instruction on line ???
 char _gosub(Line* line) {
-    unsigned int* p = (unsigned int *)&(line->code[1]);
+    unsigned int* p = (unsigned int *)pc;
     Line* target = findLine(*p);
     if(target==0) {
         return ERR_LINE_NOT_EXIST;
     } else {
         if(number_of_gosub_calls < NUM_GOSUB_CALLS) {
-            char* ret = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
+            char* ret = (char*)line + sizeof(unsigned int)+ sizeof(char)+ line->length;
             calls[number_of_gosub_calls++] = ret;
             pc = (char*)target;
             return ERR_OK_JUMP;
@@ -154,14 +155,21 @@ char _return(Line* line) {
 }
 
 char _int_constant(Line* line) {
-    return ERR_OK;
+    int* p = (int *)pc;
+    Atom atom1;
+    atom1.type = ATOM_INT;
+    atom1.integer = *p;
+    
+    char err = push(&eval_stack, atom1);
+    
+    return err == 0 ? ERR_OK : ERR_STACK_FULL;
 }
 
 char _var(Line* line) {
     return ERR_OK;
 }
 
-//TODO reuse code for multiple eval operations
+//TODO reuse code for multiple expression operations
 char _add(Line* line) {
     Atom atom1;
     Atom atom2;
@@ -238,8 +246,19 @@ char _div(Line* line) {
     return ERR_OK;
 }
 
+instr_impl* after_expr;
+
+char _eval_(Line* line) {
+    printf("EVAL:\r\n");
+    print_stack(&eval_stack);
+    return ERR_OK;
+}
+
 char _eval(Line* line) {
-    // Skips the opcode and continues decoding the expression.
-    pc = pc+1;
-    return ERR_OK_JUMP;
+    after_expr = _eval_;
+    return ERR_OK;
+}
+
+char _end_of_expr(Line* line) {
+    return after_expr(line);
 }

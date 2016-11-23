@@ -41,6 +41,7 @@ void list_opcodes_line(Line* line) {
         printf("%s ",keywords[opcode].name);
         switch(keywords[opcode].parameters) {
             case PARAM_VOID:
+            case PARAM_EXPR:
                 i=i+1;
                 break;
             case PARAM_NUM:
@@ -57,7 +58,7 @@ void list_opcodes_line(Line* line) {
                 i=i+len;
                 break;
             default:
-                printf("<OPCODES PARAMETERS NOT IMPLEMENTED. SKIP 1 OPCODE>");
+                printf("<WHILE LISTING PARAM UNKWNOWN>");
                 i=i+1;
         }
         
@@ -135,21 +136,17 @@ void addExpr_string(char opcode, char* str) {
 
 unsigned char doTrace = 0;
 
-
-//TODO Multi-instruction lines
-// hacer un bucle que vaya incrementando i (posicion del opcode) hasta lon de linea
-// hacer que el pc sea la siguiente instruccion
 void run() {
     unsigned char end = 0;
     
     pc = sop;
     while(pc<eop && !end) {
         Line* line = (Line*)pc;
-        int i=0;
+        pc = (char*)&(line->code[0]);
+        char* eol = pc + (line->length);
         
-        while(i<line->length && !end) {
-            
-            Keyword k = keywords[line->code[i]];
+        while(pc<eol && !end) {
+            Keyword k = keywords[*pc];
             instr_impl* impl = k.impl;
             
             if(doTrace) {
@@ -161,6 +158,7 @@ void run() {
                 printf("OPCODE Not known in line %d\r\n", line->lineNumber);
                 break;
             } else {
+                pc++;
                 char result = impl(line);
                 
                 if(doTrace) {
@@ -171,23 +169,22 @@ void run() {
                     case ERR_OK:
                         switch(k.parameters) {
                             case PARAM_VOID:
-                                i=i+1;
+                            case PARAM_EXPR:
                                 break;
                             case PARAM_NUM:
-                                i=i+1+sizeof(unsigned int);
+                                pc=pc+sizeof(unsigned int);
                                 break;
                             case PARAM_VAR:
-                                i=i+1;
-                                char* p = (char *)&(line->code[i]);
                                 //TODO try recover this info from instruction execution
-                                i=i+(int)strlen(p);
+                                pc=pc+(int)strlen(pc);
                                 break;
                             default:
-                                printf("<OPCODES PARAMETERS NOT IMPLEMENTED. SKIP 1 OPCODE>");
-                                i=i+1;
+                                printf("<WHILE RUNNING PARAM UNKWNOWN>");
                         }
                         break;
                     case ERR_OK_JUMP:
+                        // This makes exit the inner loop
+                        pc=eol;
                         break;
                     case ERR_OK_END:
                         end = 1;
@@ -201,6 +198,5 @@ void run() {
         
         //Instead of jumping to the next line, the code pointer is already on the new line
         //pc = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
-        pc = (char *)&(line->code[i]);
     }
 }

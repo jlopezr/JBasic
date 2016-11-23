@@ -32,6 +32,7 @@ char _sub(Line* line);
 char _mul(Line* line);
 char _div(Line* line);
 char _eval(Line* line);
+char _end_of_expr(Line* line);
 
 char _not_implemented(Line* line);
 

@@ -10,8 +10,6 @@
 #include "minunit.h"
 #include "sym.h"
 
-int tests_run = 0;
-
 static char * test_sym_simple() {
     set_string_var("A", "HELLO");
     set_string_var("B", "WORLD");

@@ -73,7 +73,7 @@ ENTRY(ADD,      0, PARAM_VOID,      _add)               \
 ENTRY(SUB,      0, PARAM_VOID,      _sub)               \
 ENTRY(MUL,      0, PARAM_VOID,      _mul)               \
 ENTRY(DIV,      0, PARAM_VOID,      _div)               \
-ENTRY(END_EXPR, 0, PARAM_VOID,      _not_implemented)   \
+ENTRY(END_EXPR, 0, PARAM_VOID,      _end_of_expr)       \
 ENTRY(EVAL,     0, PARAM_EXPR,      _eval)              \
 ENTRY(TEST,     0, PARAM_VOID,      _test)              \
 ENTRY(ZERO,     0, PARAM_VAR,       _zero)              \
