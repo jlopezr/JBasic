@@ -30,6 +30,16 @@ Line* findLine(unsigned int lineNumber) {
     return NULL;
 }
 
+void list_opcodes_hex(Line* line) {
+    int i=0;
+    
+    while(i<line->length) {
+        printf("%x ", line->code[i]);
+        i++;
+    }
+    printf("\r\n");
+}
+
 void list_opcodes_line(Line* line) {
     int i=0;
     unsigned int* p;
@@ -47,15 +57,15 @@ void list_opcodes_line(Line* line) {
             case PARAM_NUM:
                 i=i+1;
                 p = (unsigned int *)&(line->code[i]);
-                printf("%u ",*p);
+                printf("'%u' ",*p);
                 i=i+sizeof(unsigned int);
                 break;
             case PARAM_VAR:
                 i=i+1;
                 p2 = (char *)&(line->code[i]);
                 len = (int)strlen(p2);
-                printf("%s ", p2);
-                i=i+len;
+                printf("'%s' ", p2);
+                i=i+len+1;
                 break;
             default:
                 printf("<WHILE LISTING PARAM UNKWNOWN>");
@@ -71,6 +81,7 @@ void list_opcodes() {
     while(tmp<eop) {
         Line* line = (Line*)tmp;
         printf("%u (size: %u) ", line->lineNumber, line->length);
+        list_opcodes_hex(line);
         list_opcodes_line(line);
         printf("\r\n");
         tmp = tmp + sizeof(unsigned int) + sizeof(char) + line->length;
@@ -124,14 +135,15 @@ void addExpr_int(char opcode, int n) {
 
 void addExpr_op(char opcode) {
     *eop = opcode;
-    eop = eop + sizeof(char);
+    eop++;
 }
+
 
 void addExpr_string(char opcode, char* str) {
     *eop = opcode;
     eop++;
     char* q = stpcpy(eop, str);
-    eop = eop + sizeof(char) + (q-eop);
+    eop = q+1;
 }
 
 unsigned char doTrace = 0;
@@ -175,8 +187,8 @@ void run() {
                                 pc=pc+sizeof(unsigned int);
                                 break;
                             case PARAM_VAR:
-                                //TODO try recover this info from instruction execution
-                                pc=pc+(int)strlen(pc);
+                                //TODO try recover this info from instruction execution... some use the pointer without copy... :(
+                                pc=pc+(int)strlen(pc)+1;
                                 break;
                             default:
                                 printf("<WHILE RUNNING PARAM UNKWNOWN>");

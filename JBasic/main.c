@@ -36,9 +36,10 @@ void parse(char* input) {
 
 int main(int argc, const char * argv[]) {
     
+    addLine_string(ZERO, "VAR");
     addLine(EVAL);
     addExpr_int(INT_K, 1);
-    addExpr_int(INT_K, 2);
+    addExpr_string(VAR, "VAR");
     addExpr_op(ADD);
     addExpr_op(END_EXPR);
     endLine();

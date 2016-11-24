@@ -161,12 +161,22 @@ char _int_constant(Line* line) {
     atom1.integer = *p;
     
     char err = push(&eval_stack, atom1);
-    
     return err == 0 ? ERR_OK : ERR_STACK_FULL;
 }
 
 char _var(Line* line) {
-    return ERR_OK;
+    char* name = (char*)pc;
+    Atom atom1;
+    atom1.type = ATOM_INT;
+    
+    //TODO be able to get the pointer to the symbol table
+    char ret = get_int_var(name, &(atom1.integer));
+    if(ret != ERR_OK) {
+        return ret;
+    }
+    
+    ret = push(&eval_stack, atom1);
+    return ret == 0 ? ERR_OK : ERR_STACK_FULL;
 }
 
 //TODO reuse code for multiple expression operations
