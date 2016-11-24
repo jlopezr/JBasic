@@ -48,8 +48,8 @@ extern Keyword keywords[];
 
 #define KEYWORD_TABLE(ENTRY) \
 ENTRY(END,      0, PARAM_VOID,      _end)               \
-ENTRY(LET,      0, PARAM_ASSIGN,    _not_implemented)   \
-ENTRY(PRINT,    0, PARAM_VAR,       _print)             \
+ENTRY(LET,      0, PARAM_VAR,       _let)               \
+ENTRY(PRINT,    0, PARAM_EXPR,      _print)             \
 ENTRY(INPUT,    0, PARAM_INPUT,     _not_implemented)   \
 ENTRY(AUTO,     1, PARAM_NUM_OPT,   _not_implemented)   \
 ENTRY(EDIT,     1, PARAM_NUM_OPT,   _not_implemented)   \

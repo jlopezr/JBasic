@@ -102,6 +102,7 @@ void addLine(char instruction) {
 
 void addLine_int(char instruction, unsigned int n) {
     Line* line = (Line*)eop;
+    lastLine = line;
     lastLineNumber = lastLineNumber + 10;
     line->lineNumber = lastLineNumber;
     line->length = 1 + sizeof(unsigned int);
@@ -113,6 +114,7 @@ void addLine_int(char instruction, unsigned int n) {
 
 void addLine_string(char instruction, char* str) {
     Line* line = (Line*)eop;
+    lastLine = line;
     lastLineNumber = lastLineNumber + 10;
     line->lineNumber = lastLineNumber;
     line->code[0] = instruction;

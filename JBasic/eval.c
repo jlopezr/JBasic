@@ -74,40 +74,6 @@ Stack eval_stack;
 Stack o_stack;
 Stack op_stack;
 
-char rpn_eval(char* expr, Line* line) {
-    char* opcode = expr;
-    
-    stack_init(&eval_stack);
-    
-    while(*opcode != END_EXPR) {
-        //TODO Expression check in keywords
-        
-        Keyword k = keywords[*opcode];
-        instr_impl* impl = k.impl;
-        
-        if(impl==0) {
-            printf("EXPRESSION OPCODE Not known in line %d\r\n", line->lineNumber);
-            return ERR_BAD_SYNTAX;
-        } else {
-            char result = impl(line);
-            switch(result) {
-                case ERR_OK:
-                    break;
-                default:
-                    printf("RETURN CODE NOT EXPECTED");
-                    return ERR_BAD_SYNTAX;
-            }
-            opcode++;
-        }
-        printf("RESULT OF EVAL\r\n");
-        print_stack(&eval_stack);
-        printf("------------------\r\n");
-    }
-    
-    return ERR_OK;
-}
-
-
 /*
 int main2() {
     Atom op1, op2, op3;

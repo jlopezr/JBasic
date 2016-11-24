@@ -110,19 +110,6 @@ char _dec(Line* line) {
     return set_int_var(name, value);
 }
 
-char _print(Line* line) {
-    char* name = (char*)pc;
-    int value;
-    
-    //TODO be able to get the pointer to the symbol table
-    char ret = get_int_var(name, &value);
-    if(ret != ERR_OK) {
-        return ret;
-    }
-    printf("%d\r\n", value);
-    return ERR_OK;
-}
-
 char* calls[NUM_GOSUB_CALLS];
 int number_of_gosub_calls = 0;
 
@@ -257,6 +244,7 @@ char _div(Line* line) {
 }
 
 instr_impl* after_expr;
+char* after_name;
 
 char _eval_(Line* line) {
     printf("EVAL:\r\n");
@@ -265,7 +253,49 @@ char _eval_(Line* line) {
 }
 
 char _eval(Line* line) {
+    //TODO Must be initialized all the times?
+    stack_init(&eval_stack);
     after_expr = _eval_;
+    return ERR_OK;
+}
+
+char _let_(Line* line) {
+    Atom atom1;
+    char err = pop(&eval_stack, &atom1);
+    if(err!=0 || eval_stack.stack_pos != 0) {
+        return ERR_BAD_SYNTAX;
+    }
+    if(atom1.type!=ATOM_INT) {
+        return ERR_BAD_TYPE;
+    }
+    return set_int_var(after_name, atom1.integer);
+}
+
+char _let(Line* line) {
+    //TODO Must be initialized all the times?
+    stack_init(&eval_stack);
+    after_expr = _let_;
+    after_name = (char*)pc;
+    return ERR_OK;
+}
+
+char _print_(Line* line) {
+    Atom atom1;
+    char err = pop(&eval_stack, &atom1);
+    if(err!=0 || eval_stack.stack_pos != 0) {
+        return ERR_BAD_SYNTAX;
+    }
+    if(atom1.type!=ATOM_INT) {
+        return ERR_BAD_TYPE;
+    }
+    printf("%d\r\n", atom1.integer);
+    return ERR_OK;
+}
+
+char _print(Line* line) {
+    //TODO Must be initialized all the times?
+    stack_init(&eval_stack);
+    after_expr = _print_;
     return ERR_OK;
 }
 

@@ -24,6 +24,7 @@ char _dec(Line* line);
 char _print(Line* line);
 char _gosub(Line* line);
 char _return(Line* line);
+char _let(Line* line);
 
 char _int_constant(Line* line);
 char _var(Line* line);
