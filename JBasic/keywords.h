@@ -23,6 +23,8 @@
 #define PARAM_LIST      8       // None | num | num - num
 #define PARAM_PRINT     9       // N expressions split by ; or ,
 #define PARAM_INPUT     10      // A variable or "text", variable
+#define PARAM_1_INT     11      // one integer
+#define PARAM_2_INT     11      // two integer
 
 /*
     Instruction format
@@ -74,6 +76,10 @@ ENTRY(SUB,      0, PARAM_VOID,      _sub)               \
 ENTRY(MUL,      0, PARAM_VOID,      _mul)               \
 ENTRY(DIV,      0, PARAM_VOID,      _div)               \
 ENTRY(END_EXPR, 0, PARAM_VOID,      _end_of_expr)       \
+ENTRY(MIN,      0, PARAM_2_INT,     _min)               \
+ENTRY(MAX,      0, PARAM_2_INT,     _max)               \
+ENTRY(POW,      0, PARAM_2_INT,     _pow)               \
+ENTRY(SQRT,     0, PARAM_1_INT,     _sqrt)              \
 ENTRY(EVAL,     0, PARAM_EXPR,      _eval)              \
 ENTRY(TEST,     0, PARAM_VOID,      _test)              \
 ENTRY(ZERO,     0, PARAM_VAR,       _zero)              \

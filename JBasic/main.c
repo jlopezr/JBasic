@@ -45,6 +45,15 @@ int main(int argc, const char * argv[]) {
     addExpr_op(ADD);
     addExpr_op(END_EXPR);
     endLine();
+    addLine_string(LET, "JUAN");
+    addExpr_int(INT_K, 8);
+    addExpr_int(INT_K, 2);
+    addExpr_op(POW);
+    addExpr_op(SQRT);
+    addExpr_int(INT_K, 29);
+    addExpr_op(MAX);
+    addExpr_op(END_EXPR);
+    endLine();
     addLine(PRINT);
     addExpr_string(VAR, "VAR");
     addExpr_op(END_EXPR);
@@ -53,13 +62,12 @@ int main(int argc, const char * argv[]) {
     addExpr_string(VAR, "OTHER_VAR");
     addExpr_op(END_EXPR);
     endLine();
-    
-    /*
-    addLine(TEST);
-    addExpr_op(TEST);
-    addExpr_op(TEST);
+    addLine(PRINT);
+    addExpr_string(VAR, "JUAN");
+    addExpr_op(END_EXPR);
     endLine();
-    */
+
+    //addLine(LIST);
 
     /*
     addLine_string(ZERO, "VAR");
@@ -69,11 +77,6 @@ int main(int argc, const char * argv[]) {
     addLine(END);
     addLine_string(PRINT, "VAR");
     addLine(RETURN);
-    */
-    
-    /*
-    addLine(LIST);
-    addLine(TEST);
     */
     
     addLine(END);

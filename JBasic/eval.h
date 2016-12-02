@@ -45,6 +45,8 @@ int peek(Stack* s, Atom* atom);
 int pop(Stack* s, Atom* atom);
 void print_stack(Stack* s);
 
+char rpn_to_infix(char* code);
+
 extern Stack input_stack;
 extern Stack eval_stack;
 extern Stack o_stack;

@@ -35,6 +35,11 @@ char _div(Line* line);
 char _eval(Line* line);
 char _end_of_expr(Line* line);
 
+char _min(Line* line);
+char _max(Line* line);
+char _pow(Line* line);
+char _sqrt(Line* line);
+
 char _not_implemented(Line* line);
 
 #endif /* instructions_h */

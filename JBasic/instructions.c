@@ -12,6 +12,7 @@
 #include "sym.h"
 #include "eval.h"
 #include <strings.h>
+#include <math.h>
 
 char _end(Line* line) {
     return ERR_OK_END;
@@ -66,6 +67,9 @@ char _list(Line* line) {
             case PARAM_VAR:
                 p2 = (char*)&(line->code[1]);
                 sprintf(buffer,"%s", p2);
+                break;
+            case PARAM_EXPR:
+                rpn_to_infix((char*)&(line->code[1]));
                 break;
             default:
                 printf("LIST PARAMETERS NOT IMPLEMENTED\r\n");
@@ -243,6 +247,42 @@ char _div(Line* line) {
     return ERR_OK;
 }
 
+char _min(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    if(atom1.integer > atom2.integer) {
+            atom1.integer = atom2.integer;
+    }
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
+char _max(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    if(atom1.integer < atom2.integer) {
+        atom1.integer = atom2.integer;
+    }
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
 instr_impl* after_expr;
 char* after_name;
 
@@ -301,4 +341,36 @@ char _print(Line* line) {
 
 char _end_of_expr(Line* line) {
     return after_expr(line);
+}
+
+/*** MATH ***/
+
+char _pow(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    atom1.integer = pow(atom2.integer, atom1.integer);
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
+char _sqrt(Line* line) {
+    Atom atom1;
+    char err1 = pop(&eval_stack, &atom1);
+    
+    if(err1!=0 || atom1.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    atom1.integer = sqrt(atom1.integer);
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
 }
