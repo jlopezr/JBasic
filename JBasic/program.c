@@ -52,6 +52,8 @@ void list_opcodes_line(Line* line) {
         switch(keywords[opcode].parameters) {
             case PARAM_VOID:
             case PARAM_EXPR:
+            case PARAM_1_INT:
+            case PARAM_2_INT:
                 i=i+1;
                 break;
             case PARAM_NUM:
@@ -68,7 +70,7 @@ void list_opcodes_line(Line* line) {
                 i=i+len+1;
                 break;
             default:
-                printf("<WHILE LISTING PARAM UNKWNOWN>");
+                printf("<WHILE LISTING PARAM UNKNOWN>");
                 i=i+1;
         }
         
@@ -184,6 +186,8 @@ void run() {
                         switch(k.parameters) {
                             case PARAM_VOID:
                             case PARAM_EXPR:
+                            case PARAM_1_INT:
+                            case PARAM_2_INT:
                                 break;
                             case PARAM_NUM:
                                 pc=pc+sizeof(unsigned int);
@@ -193,7 +197,7 @@ void run() {
                                 pc=pc+(int)strlen(pc)+1;
                                 break;
                             default:
-                                printf("<WHILE RUNNING PARAM UNKWNOWN>");
+                                printf("<WHILE RUNNING PARAM UNKNOWN>");
                         }
                         break;
                     case ERR_OK_JUMP:

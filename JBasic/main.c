@@ -36,15 +36,20 @@ void parse(char* input) {
 
 int main(int argc, const char * argv[]) {
     
+    // 10 ZERO VAR
     addLine_string(ZERO, "VAR");
+    // 20 INC VAR
     addLine_string(INC, "VAR");
+    // 30 INC VAR
     addLine_string(INC, "VAR");
+    // 40 LET OTHER_VAR = 8 + VAR
     addLine_string(LET, "OTHER_VAR");
     addExpr_int(INT_K, 8);
     addExpr_string(VAR, "VAR");
     addExpr_op(ADD);
     addExpr_op(END_EXPR);
     endLine();
+    // 50 LET JUAN = MAX(29, SQRT(POW(8,2)))
     addLine_string(LET, "JUAN");
     addExpr_int(INT_K, 8);
     addExpr_int(INT_K, 2);
@@ -54,20 +59,23 @@ int main(int argc, const char * argv[]) {
     addExpr_op(MAX);
     addExpr_op(END_EXPR);
     endLine();
+    // 60 PRINT VAR
     addLine(PRINT);
     addExpr_string(VAR, "VAR");
     addExpr_op(END_EXPR);
     endLine();
+    // 70 PRINT OTHER_VAR
     addLine(PRINT);
     addExpr_string(VAR, "OTHER_VAR");
     addExpr_op(END_EXPR);
     endLine();
+    // 80 PRINT JUAN
     addLine(PRINT);
     addExpr_string(VAR, "JUAN");
     addExpr_op(END_EXPR);
     endLine();
-
-    //addLine(LIST);
+    // 90 LIST
+    addLine(LIST);
 
     /*
     addLine_string(ZERO, "VAR");
@@ -79,6 +87,7 @@ int main(int argc, const char * argv[]) {
     addLine(RETURN);
     */
     
+    // 100 END
     addLine(END);
     
     list_opcodes();

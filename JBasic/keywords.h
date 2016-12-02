@@ -24,7 +24,7 @@
 #define PARAM_PRINT     9       // N expressions split by ; or ,
 #define PARAM_INPUT     10      // A variable or "text", variable
 #define PARAM_1_INT     11      // one integer
-#define PARAM_2_INT     11      // two integer
+#define PARAM_2_INT     12      // two integer
 
 /*
     Instruction format
