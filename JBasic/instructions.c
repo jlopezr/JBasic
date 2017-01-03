@@ -71,6 +71,9 @@ char _list(Line* line) {
             case PARAM_EXPR:
                 rpn_to_infix((char*)&(line->code[1]));
                 break;
+            case PARAM_ASSIGN:
+                rpn_to_infix((char*)&(line->code[1]));
+                break;
             default:
                 printf("LIST PARAMETERS NOT IMPLEMENTED\r\n");
         }

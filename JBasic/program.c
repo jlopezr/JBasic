@@ -69,6 +69,13 @@ void list_opcodes_line(Line* line) {
                 printf("'%s' ", p2);
                 i=i+len+1;
                 break;
+            case PARAM_ASSIGN:
+                i=i+1;
+                p2 = (char *)&(line->code[i]);
+                len = (int)strlen(p2);
+                printf("'%s' = ", p2);
+                i=i+len+1;
+                break;
             default:
                 printf("<WHILE LISTING PARAM UNKNOWN>");
                 i=i+1;
@@ -193,6 +200,7 @@ void run() {
                                 pc=pc+sizeof(unsigned int);
                                 break;
                             case PARAM_VAR:
+                            case PARAM_ASSIGN:
                                 //TODO try recover this info from instruction execution... some use the pointer without copy... :(
                                 pc=pc+(int)strlen(pc)+1;
                                 break;
