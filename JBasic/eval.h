@@ -35,14 +35,14 @@ typedef struct {
     };
 } Atom;
 
+char atom_to_string(Atom* atom);
+
 #define STACK_MAX   64
 
 typedef struct {
     Atom stack[STACK_MAX];
     unsigned char stack_pos;
 } Stack;
-
-char atom_to_string(Atom* atom);
 
 void stack_init(Stack* s);
 int push(Stack* s, Atom a);

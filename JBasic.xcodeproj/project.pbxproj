@@ -98,6 +98,9 @@
 				0D86A15C1DE49F32004A16A7 /* eval_test.c */,
 				0D1015441CE8E0C4007BB306 /* eval.c */,
 				0D1015451CE8E0C4007BB306 /* eval.h */,
+				0DCA123C1DEE3F8B0095545E /* heap_test.c */,
+				0DCA12391DEE3E180095545E /* heap.c */,
+				0DCA123A1DEE3E180095545E /* heap.h */,
 				0DC2E4371CDFDD6300B9C82D /* heapsort.c */,
 				0DC2E4381CDFDD6300B9C82D /* heapsort.h */,
 				0DC418141DE3AE7400EDA7BA /* instructions.c */,
@@ -111,9 +114,6 @@
 				0DC4180F1DE3A82400EDA7BA /* program.h */,
 				0DC418081DE399D200EDA7BA /* sym_test.c */,
 				0DC418051DE3911B00EDA7BA /* sym.c */,
-				0DCA12391DEE3E180095545E /* heap.c */,
-				0DCA123C1DEE3F8B0095545E /* heap_test.c */,
-				0DCA123A1DEE3E180095545E /* heap.h */,
 				0DC418061DE3911B00EDA7BA /* sym.h */,
 			);
 			path = JBasic;

@@ -120,13 +120,6 @@ int main(int argc, const char * argv[]) {
     addExpr_string(VAR, "A");
     addExpr_op(END_EXPR);
     endLine();
-
-    addLine_string(DEC, "A");
-    
-    addLine(PRINT);
-    addExpr_string(VAR, "A");
-    addExpr_op(END_EXPR);
-    endLine();
     
     //30 END
     addLine(END);
@@ -134,8 +127,8 @@ int main(int argc, const char * argv[]) {
     printf("====================\r\n");
     list_opcodes();
     printf("--------------------\r\n");
-    //_list(NULL);
+    _list(NULL);
     //printf("********************\r\n");
-    run();
+    //run();
     return 0;
 }

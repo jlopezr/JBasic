@@ -15,13 +15,35 @@ Keyword keywords[NUM_KEYWORDS] = {
 };
 
 char* findKeyword(unsigned char code) {
-    return keywords[code].name;
+    switch(code) {
+        case ADD:
+            return "+";
+        case SUB:
+            return "-";
+        case MUL:
+            return "*";
+        case DIV:
+            return "/";
+        default:
+            return keywords[code].name;
+    }
+    
 }
 
 char* findKeywordByImpl(instr_impl* impl) {
-    for(int i=0;i<NUM_KEYWORDS;i++) {
-        if(impl == keywords[i].impl) {
-            return keywords[i].name;
+    if(keywords[ADD].impl == impl) {
+        return "+";
+    } else if(keywords[SUB].impl == impl) {
+        return "-";
+    } else if(keywords[MUL].impl == impl) {
+        return "*";
+    } else if(keywords[DIV].impl == impl) {
+        return "/";
+    } else {
+        for(int i=0;i<NUM_KEYWORDS;i++) {
+            if(impl == keywords[i].impl) {
+                return keywords[i].name;
+            }
         }
     }
     return 0;

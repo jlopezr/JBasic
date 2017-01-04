@@ -53,7 +53,6 @@ void _list_line(Line* line) {
         printf("%s ",keywords[opcode].name);
         switch(keywords[opcode].parameters) {
             case PARAM_VOID:
-            case PARAM_EXPR:
             case PARAM_1_INT:
             case PARAM_2_INT:
                 i=i+1;
@@ -70,6 +69,10 @@ void _list_line(Line* line) {
                 len = (int)strlen(p2);
                 printf("'%s' ", p2);
                 i=i+len+1;
+                break;
+            case PARAM_EXPR:
+                i=i+1;
+                i = rpn_to_infix(line, i);
                 break;
             case PARAM_ASSIGN:
                 i=i+1;
@@ -261,6 +264,49 @@ char _div(Line* line) {
     
     push(&eval_stack, atom1);
     
+    return ERR_OK;
+}
+
+char _less(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+    
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    atom1.type = ATOM_BOOL;
+    if(atom1.integer < atom2.integer) {
+        atom1.boolean = 1;
+    } else {
+        atom1.boolean = 0;
+    }
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
+//TODO Seems that CPC Basic uses -1 as true and 0 as false ...
+char _greater(Line* line) {
+    Atom atom1;
+    Atom atom2;
+    char err1 = pop(&eval_stack, &atom1);
+    char err2 = pop(&eval_stack, &atom2);
+        
+    if(err1!=0 || err2!=0 || atom1.type != ATOM_INT || atom2.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+        
+    atom1.type = ATOM_BOOL;
+    if(atom1.integer > atom2.integer) {
+        atom1.boolean = 1;
+    } else {
+        atom1.boolean = 0;
+    }
+        
+    push(&eval_stack, atom1);
     return ERR_OK;
 }
 

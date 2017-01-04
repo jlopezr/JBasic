@@ -32,7 +32,8 @@ char _add(Line* line);
 char _sub(Line* line);
 char _mul(Line* line);
 char _div(Line* line);
-char _eval(Line* line);
+char _less(Line* line);
+char _greater(Line* line);
 char _end_of_expr(Line* line);
 
 char _min(Line* line);

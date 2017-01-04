@@ -11,6 +11,7 @@
 #include "errors.h"
 #include "heap.h"
 #include <stdlib.h>
+#include <string.h>
 
 void stack_init(Stack* s) {
     s->stack_pos = 0;
@@ -53,16 +54,7 @@ void print_stack(Stack* s) {
         if(type == ATOM_INT) {
             printf("%d", s->stack[i].integer);
         } else if(type == ATOM_OP) {
-            instr_impl* op = s->stack[i].operation;
-            if( op == _add) {
-                printf("+");
-            } else if(op == _sub) {
-                printf("-");
-            } else if(op == _mul) {
-                printf("*");
-            } else if(op == _div) {
-                printf("/");
-            }
+            printf("%s", findKeywordByImpl(s->stack[i].operation));
         }
         printf("\r\n");
     }
@@ -73,36 +65,6 @@ Stack input_stack;
 Stack eval_stack;
 Stack o_stack;
 Stack op_stack;
-
-// 2+3*2 => 2 3 2 * +
-// 2*3+2 => 2 3 * 2 +
-
-/*
-Stack<Expression> expr = new Stack<>();
-for (String token : postfix.split("\\s+")) {
-    char c = token.charAt(0);
-    int idx = Expression.ops.indexOf(c);
-    if (idx != -1 && token.length() == 1) {
-        
-        Expression r = expr.pop();
-        Expression l = expr.pop();
-        
-        int opPrec = idx / 2;
-        
-        if (l.prec < opPrec || (l.prec == opPrec && c == '^'))
-            l.ex = '(' + l.ex + ')';
-        
-        if (r.prec < opPrec || (r.prec == opPrec && c != '^'))
-            r.ex = '(' + r.ex + ')';
-        
-        expr.push(new Expression(l.ex, r.ex, token));
-    } else {
-        expr.push(new Expression(token));
-    }
-    System.out.printf("%s -> %s%n", token, expr);
-}
-return expr.peek().ex;
-*/
 
 char numberOfDigits(int n) {
     char ret = 0;
@@ -228,17 +190,21 @@ char atom_to_string(Atom* atom) {
  
 int rpn_to_infix(Line* line, int i) {
     Atom a1, a2;
+    char end = 0;
     int* p;
+    char* buf;
     int ret, len1, len2;
     stack_init(&input_stack);
     
-    char opcode = line->code[i];
-    while(i<line->length && opcode != END_EXPR) {
+    
+    while(i<line->length && !end) {
+        char opcode = line->code[i];
         switch(opcode) {
             case ADD:
             case SUB:
             case MUL:
             case DIV:
+                
                 /* CASE PUSH */
                 /*
                 a1.type = ATOM_OP;
@@ -256,6 +222,11 @@ int rpn_to_infix(Line* line, int i) {
                 //TODO Check ERRORS
                 
                 //JUAN HERE
+                //TODO Store priorities for expr
+                //TODO Store printed name for expr, ADD is +
+                //TODO Store if op must be stored (i.e is an expression)
+                
+                printf("%s %s %s", a1.string, findKeyword(opcode), a2.string);
                 
                 atom_free(&a1);
                 atom_free(&a2);
@@ -270,6 +241,14 @@ int rpn_to_infix(Line* line, int i) {
                 i=i+sizeof(int)+1;
                 break;
             case VAR:
+                //TODO JUAN MUST PUT IN THE INPUT STACK !!!!
+                buf = (char*)(&line->code[i+1]);
+                printf("%s ",buf);
+                i = i+(int)strlen(buf)+2;
+                break;
+            case END_EXPR:
+                i++;
+                end = 1;
                 break;
             default:
                 printf("<OPCODE NOT IMPLEMENTED IN RPN_TO_INFIX>\r\n");
