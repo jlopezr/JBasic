@@ -12,7 +12,6 @@
 void* heap;
 void* first_free;
 
-
 void set_free_buffer(void* buf, int size, void* next) {
     int* p = (int*)buf;
     *p = size;

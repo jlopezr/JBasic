@@ -18,6 +18,15 @@ char* findKeyword(unsigned char code) {
     return keywords[code].name;
 }
 
+char* findKeywordByImpl(instr_impl* impl) {
+    for(int i=0;i<NUM_KEYWORDS;i++) {
+        if(impl == keywords[i].impl) {
+            return keywords[i].name;
+        }
+    }
+    return 0;
+}
+
 int parseKeyword(char* input) {
     for(int i=0;i<NUM_KEYWORDS;i++) {
         if(strncasecmp(input, keywords[i].name, strlen(keywords[i].name))==0) {

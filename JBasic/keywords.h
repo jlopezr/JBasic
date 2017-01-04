@@ -23,7 +23,7 @@
 #define PARAM_LIST      8       // None | num | num - num
 #define PARAM_PRINT     9       // N expressions split by ; or ,
 #define PARAM_INPUT     10      // A variable or "text", variable
-#define PARAM_1_INT     11      // one integer
+#define PARAM_1_INT     11      // one integer                          //TODO this vs PARAM_NUM ???
 #define PARAM_2_INT     12      // two integer
 
 /*
@@ -50,7 +50,7 @@ extern Keyword keywords[];
 
 #define KEYWORD_TABLE(ENTRY) \
 ENTRY(END,      0, PARAM_VOID,      _end)               \
-ENTRY(LET,      0, PARAM_ASSIGN,       _let)            \
+ENTRY(LET,      0, PARAM_ASSIGN,    _let)               \
 ENTRY(PRINT,    0, PARAM_EXPR,      _print)             \
 ENTRY(INPUT,    0, PARAM_INPUT,     _not_implemented)   \
 ENTRY(AUTO,     1, PARAM_NUM_OPT,   _not_implemented)   \
@@ -80,11 +80,14 @@ ENTRY(MIN,      0, PARAM_2_INT,     _min)               \
 ENTRY(MAX,      0, PARAM_2_INT,     _max)               \
 ENTRY(POW,      0, PARAM_2_INT,     _pow)               \
 ENTRY(SQRT,     0, PARAM_1_INT,     _sqrt)              \
-ENTRY(EVAL,     0, PARAM_EXPR,      _eval)              \
+ENTRY(ABS,      0, PARAM_1_INT,     _abs)               \
+ENTRY(SGN,      0, PARAM_1_INT,     _sgn)               \
 ENTRY(TEST,     0, PARAM_VOID,      _test)              \
 ENTRY(ZERO,     0, PARAM_VAR,       _zero)              \
 ENTRY(INC,      0, PARAM_VAR,       _inc)               \
 ENTRY(DEC,      0, PARAM_VAR,       _dec)
+
+//ADD to DIV are expressions and in rpn_to_infix should be marked
 
 // int_k -> div for making expressions
 
@@ -94,6 +97,7 @@ enum Keyword {
 };
 
 char* findKeyword(unsigned char code);
+char* findKeywordByImpl(instr_impl* impl);
 int parseKeyword(char* input);
 
 #endif /* keywords_h */

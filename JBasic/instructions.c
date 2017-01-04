@@ -39,48 +39,63 @@ char _goto(Line* line) {
     }
 }
 
-char _list(Line* line) {
-    char buffer[MAX_LINE_SIZE_IN_TEXT];
+void _list_line(Line* line) {
+    int i=0;
     unsigned int* p;
     char* p2;
+    int len;
     
+    while(i<line->length) {
+        if(i!=0) {
+            printf(": ");
+        }
+        char opcode = line->code[i];
+        printf("%s ",keywords[opcode].name);
+        switch(keywords[opcode].parameters) {
+            case PARAM_VOID:
+            case PARAM_EXPR:
+            case PARAM_1_INT:
+            case PARAM_2_INT:
+                i=i+1;
+                break;
+            case PARAM_NUM:
+                i=i+1;
+                p = (unsigned int *)&(line->code[i]);
+                printf("'%u' ",*p);
+                i=i+sizeof(unsigned int);
+                break;
+            case PARAM_VAR:
+                i=i+1;
+                p2 = (char *)&(line->code[i]);
+                len = (int)strlen(p2);
+                printf("'%s' ", p2);
+                i=i+len+1;
+                break;
+            case PARAM_ASSIGN:
+                i=i+1;
+                p2 = (char *)&(line->code[i]);
+                len = (int)strlen(p2);
+                printf("%s = ", p2);
+                i=i+len+1;
+                i = rpn_to_infix(line, i);
+                break;
+            default:
+                printf("<WHILE OP LIST PARAM UNKNOWN>");
+                i=i+1;
+        }
+    }
+}
+
+char _list(Line* line) {
     char* pc = sop;
     while(pc<eop) {
         Line* line = (Line*)pc;
-        
-        switch(keywords[line->code[0]].parameters) {
-            case PARAM_VOID:
-                strcpy(buffer,"");
-                break;
-            case PARAM_NUM:
-                p = (unsigned int *)&(line->code[1]);
-                sprintf(buffer,"%u",*p);
-                break;
-            case PARAM_NUM_OPT:
-                if(line->length==1+sizeof(unsigned int)) {
-                    p = (unsigned int *)&(line->code[1]);
-                    sprintf(buffer,"%u",*p);
-                } else {
-                    strcpy(buffer,"");
-                }
-                break;
-            case PARAM_VAR:
-                p2 = (char*)&(line->code[1]);
-                sprintf(buffer,"%s", p2);
-                break;
-            case PARAM_EXPR:
-                rpn_to_infix((char*)&(line->code[1]));
-                break;
-            case PARAM_ASSIGN:
-                rpn_to_infix((char*)&(line->code[1]));
-                break;
-            default:
-                printf("LIST PARAMETERS NOT IMPLEMENTED\r\n");
-        }
-        
-        printf("%d %s %s\n", line->lineNumber, findKeyword(line->code[0]), buffer);
-        pc = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
+        printf("%d ", line->lineNumber);
+        _list_line(line);
+        printf("\r\n");
+        pc = pc + sizeof(unsigned int) + sizeof(char) + line->length;
     }
+    
     return ERR_OK;
 }
 
@@ -92,29 +107,27 @@ char _zero(Line* line) {
 char _inc(Line* line) {
     printf("INC\r\n");
     char* name = (char*)pc;
-    int value;
+    int* p = get_int_var(name);
     
-    //TODO be able to get the pointer to the symbol table
-    char ret = get_int_var(name, &value);
-    if(ret != ERR_OK) {
-        return ret;
+    if(p == 0) {
+        return ERR_VAR_NOT_FOUND;
     }
-    value++;
-    return set_int_var(name, value);
+    
+    (*p)++;
+    return ERR_OK;
 }
 
 char _dec(Line* line) {
     printf("DEC\r\n");
     char* name = (char*)pc;
-    int value;
+    int* p = get_int_var(name);
     
-    //TODO be able to get the pointer to the symbol table
-    char ret = get_int_var(name, &value);
-    if(ret != ERR_OK) {
-        return ret;
+    if(p == 0) {
+        return ERR_VAR_NOT_FOUND;
     }
-    value--;
-    return set_int_var(name, value);
+    
+    (*p)--;
+    return ERR_OK;
 }
 
 char* calls[NUM_GOSUB_CALLS];
@@ -161,13 +174,14 @@ char _int_constant(Line* line) {
 char _var(Line* line) {
     char* name = (char*)pc;
     Atom atom1;
-    atom1.type = ATOM_INT;
+    char ret;
     
-    //TODO be able to get the pointer to the symbol table
-    char ret = get_int_var(name, &(atom1.integer));
-    if(ret != ERR_OK) {
-        return ret;
+    int* p = get_int_var(name);
+    if(p == 0) {
+        return ERR_VAR_NOT_FOUND;
     }
+    atom1.type = ATOM_INT;
+    atom1.integer = *p;
     
     ret = push(&eval_stack, atom1);
     return ret == 0 ? ERR_OK : ERR_STACK_FULL;
@@ -289,19 +303,6 @@ char _max(Line* line) {
 instr_impl* after_expr;
 char* after_name;
 
-char _eval_(Line* line) {
-    printf("EVAL:\r\n");
-    print_stack(&eval_stack);
-    return ERR_OK;
-}
-
-char _eval(Line* line) {
-    //TODO Must be initialized all the times?
-    stack_init(&eval_stack);
-    after_expr = _eval_;
-    return ERR_OK;
-}
-
 char _let_(Line* line) {
     Atom atom1;
     char err = pop(&eval_stack, &atom1);
@@ -348,6 +349,8 @@ char _end_of_expr(Line* line) {
 
 /*** MATH ***/
 
+//TODO Do not pop but peek the eval stack for minimizing operations on stack
+
 char _pow(Line* line) {
     Atom atom1;
     Atom atom2;
@@ -377,3 +380,49 @@ char _sqrt(Line* line) {
     push(&eval_stack, atom1);
     return ERR_OK;
 }
+
+char _sgn(Line* line) {
+    Atom atom1;
+    int n, ret;
+    char err1 = pop(&eval_stack, &atom1);
+    
+    if(err1!=0 || atom1.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    n = atom1.integer;
+    if(n == 0) {
+        ret = 0;
+    } else if(n > 0) {
+        ret = 1;
+    } else {
+        ret = -1;
+    }
+    
+    atom1.integer = ret;
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
+char _abs(Line* line) {
+    Atom atom1;
+    int n;
+    char err1 = pop(&eval_stack, &atom1);
+    
+    if(err1!=0 || atom1.type != ATOM_INT) {
+        return ERR_BAD_SYNTAX;
+    }
+    
+    n = atom1.integer;
+    if(n<0) {
+        n = -n;
+    }
+    
+    atom1.integer = n;
+    
+    push(&eval_stack, atom1);
+    return ERR_OK;
+}
+
+

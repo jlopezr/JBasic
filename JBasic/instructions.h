@@ -39,6 +39,8 @@ char _min(Line* line);
 char _max(Line* line);
 char _pow(Line* line);
 char _sqrt(Line* line);
+char _abs(Line* line);
+char _sgn(Line* line);
 
 char _not_implemented(Line* line);
 

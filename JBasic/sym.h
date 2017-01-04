@@ -23,7 +23,7 @@ char set_string_var(char* name, char* value);
 char* get_string_var(char* name);
 void clear_string_vars();
 char set_int_var(char* name, int value);
-char get_int_var(char* name, int* value);
+int* get_int_var(char* name);
 void clear_int_vars();
 
 #endif /* sym_h */

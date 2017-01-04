@@ -11,7 +11,9 @@
 #include <stdlib.h>
 #include "program.h"
 #include "keywords.h"
+#include "instructions.h"
 #include "errors.h"
+#include "heap.h"
 
 // Parser
 void parse(char* input) {
@@ -36,6 +38,8 @@ void parse(char* input) {
 //parse("LIST");
 
 int main(int argc, const char * argv[]) {
+    
+    init_heap();
     
 //    // 10 ZERO VAR
 //    addLine_string(ZERO, "VAR");
@@ -98,6 +102,11 @@ int main(int argc, const char * argv[]) {
 //    addLine(END);
     
     
+    addLine(TEST);
+    addExpr_op(TEST);
+    addExpr_op(TEST);
+    endLine();
+    
     //10 LET A = 23 + 45
     addLine_string(LET, "A");
     addExpr_int(INT_K, 23);
@@ -112,13 +121,21 @@ int main(int argc, const char * argv[]) {
     addExpr_op(END_EXPR);
     endLine();
 
+    addLine_string(DEC, "A");
+    
+    addLine(PRINT);
+    addExpr_string(VAR, "A");
+    addExpr_op(END_EXPR);
+    endLine();
+    
     //30 END
     addLine(END);
     
     printf("====================\r\n");
     list_opcodes();
     printf("--------------------\r\n");
+    //_list(NULL);
+    //printf("********************\r\n");
     run();
-    
     return 0;
 }

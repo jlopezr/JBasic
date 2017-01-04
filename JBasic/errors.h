@@ -28,6 +28,7 @@ ENTRY(ERR_BAD_SYNTAX,     "SYNTAX ERROR")                       \
 ENTRY(ERR_BAD_TYPE,       "TYPE MISMATCH")                      \
 ENTRY(ERR_STACK_FULL,     "EXPRESSION TOO COMPLEX")             \
 ENTRY(ERR_DIV_ZERO,       "DIVISION BY ZERO")                   \
+ENTRY(ERR_MEMORY_FULL,    "MEMORY FULL")                        \
 ENTRY(ERR_OK_JUMP,        "OK2")                                \
 ENTRY(ERR_OK_END,         "OK3")
 

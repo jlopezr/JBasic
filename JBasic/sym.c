@@ -104,13 +104,12 @@ char set_int_var(char* name, int value) {
     }
 }
 
-char get_int_var(char* name, int* value) {
+int* get_int_var(char*name) {
     IntegerVar* v = find_int_var(name);
     if(v==NULL) {
         return 0;
     } else {
-        *value = v->value;
-        return ERR_OK;
+        return &(v->value);
     }
 }
 
