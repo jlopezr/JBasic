@@ -12,18 +12,13 @@
 #include <stdio.h>
 #include "keywords.h"
 
-#define ATOM_INT        0
-#define ATOM_BOOL       1
-#define ATOM_STRING     2
-#define ATOM_OP         3
-#define ATOM_TMP_STRING 4
-
-//ATOM_TMP_STRING is a string that should be deleted at the end
-
-#define OP_ADD      0
-#define OP_SUB      1
-#define OP_MUL      2
-#define OP_DIV      3
+enum AtomType {
+    ATOM_INT,         // Integer
+    ATOM_BOOL,        // Boolean, not clear if needed. CPC Basic uses 0 false, -1 true
+    ATOM_STRING,      // String
+    ATOM_OP,          // Operation
+    ATOM_TMP_STRING   // String that should be deleted at the end of the processing
+};
 
 typedef struct {
     unsigned char type;

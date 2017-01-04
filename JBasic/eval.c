@@ -124,7 +124,7 @@ char atom_to_string(Atom* atom) {
             snprintf(atom->string, digits+1, "%d", n);
             return ERR_OK;
         case ATOM_OP:
-            //TODO Atom stores the pointer to impl... but here we need the name
+            //TODO Atom stores the pointer to impl... but here we need the name. Can be faster?
             buf = findKeywordByImpl(atom->operation);
             if(buf!=0) {
                 atom->type = ATOM_STRING;
@@ -222,9 +222,6 @@ int rpn_to_infix(Line* line, int i) {
                 //TODO Check ERRORS
                 
                 //JUAN HERE
-                //TODO Store priorities for expr
-                //TODO Store printed name for expr, ADD is +
-                //TODO Store if op must be stored (i.e is an expression)
                 
                 printf("%s %s %s", a1.string, findKeyword(opcode), a2.string);
                 
