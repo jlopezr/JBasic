@@ -14,35 +14,36 @@
 
 #define NUM_GOSUB_CALLS  5
 
-char _end(Line* line);
-char _test(Line* line);
-char _goto(Line* line);
-char _list(Line* line);
-char _zero(Line* line);
-char _inc(Line* line);
-char _dec(Line* line);
-char _print(Line* line);
-char _gosub(Line* line);
-char _return(Line* line);
-char _let(Line* line);
+char _end();
+char _test();
+char _goto();
+char _list();
+char _zero();
+char _inc();
+char _dec();
+char _print();
+char _gosub();
+char _return();
+char _let();
 
-char _int_constant(Line* line);
-char _var(Line* line);
-char _add(Line* line);
-char _sub(Line* line);
-char _mul(Line* line);
-char _div(Line* line);
-char _less(Line* line);
-char _greater(Line* line);
-char _end_of_expr(Line* line);
+char _int_constant();
+char _str_constant();
+char _var();
+char _add();
+char _sub();
+char _mul();
+char _div();
+char _less();
+char _greater();
+char _end_of_expr();
 
-char _min(Line* line);
-char _max(Line* line);
-char _pow(Line* line);
-char _sqrt(Line* line);
-char _abs(Line* line);
-char _sgn(Line* line);
+char _min();
+char _max();
+char _pow();
+char _sqrt();
+char _abs();
+char _sgn();
 
-char _not_implemented(Line* line);
+char _not_implemented();
 
 #endif /* instructions_h */

@@ -15,7 +15,9 @@
 #define MAX_LINE_SIZE           255
 #define MAX_LINE_SIZE_IN_TEXT   512
 
-typedef struct {
+
+//TODO This struct will be the Instr_Line
+typedef struct {   
     unsigned int lineNumber;            // line number
     unsigned char length;               // length of the line in bytes
     unsigned char code[MAX_LINE_SIZE];  // opcodes of the line
@@ -23,20 +25,24 @@ typedef struct {
 
 Line* findLine(unsigned int lineNumber);
 
-void addLine(char instruction);
-void addLine_int(char instruction, unsigned int n);
-void addLine_string(char instruction, char* str);
+void addLine();
 void endLine();
-void addExpr_int(char opcode, int n);
-void addExpr_op(char opcode);
-void addExpr_string(char opcode, char* str);
+void addOp(char opcode);
+void addIntOp(char opcode, int n);
+void addStringOp(char opcode, char* str);
 
+char tron();
+char troff();
+
+void reset();
 void run();
 void list_opcodes();
 
 extern char program[MAX_PROGRAM_SIZE];
 extern char* pc;    // program counter
+extern Line* lc;    // Line counter
 extern char* sop;   // start of program
 extern char* eop;   // end of program
+
 
 #endif /* program_h */

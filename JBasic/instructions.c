@@ -14,27 +14,28 @@
 #include <strings.h>
 #include <math.h>
 
-char _end(Line* line) {
+char _end() {
     return ERR_OK_END;
 }
 
-char _not_implemented(Line* line) {
+char _not_implemented() {
     printf("NOT IMPLEMENTED!");
     return ERR_OK_END;
 }
 
-char _test(Line* line) {
+char _test() {
     printf("TEST\r\n");
     return ERR_OK;
 }
 
-char _goto(Line* line) {
+char _goto() {
     unsigned int* p = (unsigned int *)pc;
     Line* target = findLine(*p);
     if(target==0) {
         return ERR_LINE_NOT_EXIST;
     } else {
-        pc = (char*)target;
+        lc = (Line*)target;
+        pc = (char*)&(target->code[0]);
         return ERR_OK_JUMP;
     }
 }
@@ -60,14 +61,14 @@ void _list_line(Line* line) {
             case PARAM_NUM:
                 i=i+1;
                 p = (unsigned int *)&(line->code[i]);
-                printf("'%u' ",*p);
+                printf("%u ",*p);
                 i=i+sizeof(unsigned int);
                 break;
             case PARAM_VAR:
                 i=i+1;
                 p2 = (char *)&(line->code[i]);
                 len = (int)strlen(p2);
-                printf("'%s' ", p2);
+                printf("%s ", p2);
                 i=i+len+1;
                 break;
             case PARAM_EXPR:
@@ -89,7 +90,7 @@ void _list_line(Line* line) {
     }
 }
 
-char _list(Line* line) {
+char _list() {
     char* pc = sop;
     while(pc<eop) {
         Line* line = (Line*)pc;
@@ -102,12 +103,12 @@ char _list(Line* line) {
     return ERR_OK;
 }
 
-char _zero(Line* line) {
+char _zero() {
     char* name = (char*)pc;
     return set_int_var(name, 0);
 }
 
-char _inc(Line* line) {
+char _inc() {
     printf("INC\r\n");
     char* name = (char*)pc;
     int* p = get_int_var(name);
@@ -120,7 +121,7 @@ char _inc(Line* line) {
     return ERR_OK;
 }
 
-char _dec(Line* line) {
+char _dec() {
     printf("DEC\r\n");
     char* name = (char*)pc;
     int* p = get_int_var(name);
@@ -133,20 +134,29 @@ char _dec(Line* line) {
     return ERR_OK;
 }
 
-char* calls[NUM_GOSUB_CALLS];
+typedef struct {
+    char* pc;
+    Line* lc;
+} GosubState;
+
+GosubState calls[NUM_GOSUB_CALLS];
 int number_of_gosub_calls = 0;
 
 //TODO GOSUB must be the last instruction on line ???
-char _gosub(Line* line) {
+//TODO GOSUB is the only instruction that uses the line pointer
+char _gosub() {
     unsigned int* p = (unsigned int *)pc;
     Line* target = findLine(*p);
     if(target==0) {
         return ERR_LINE_NOT_EXIST;
     } else {
         if(number_of_gosub_calls < NUM_GOSUB_CALLS) {
-            char* ret = (char*)line + sizeof(unsigned int)+ sizeof(char)+ line->length;
-            calls[number_of_gosub_calls++] = ret;
-            pc = (char*)target;
+            char* ret = (char*)p + sizeof(unsigned int);
+            calls[number_of_gosub_calls].pc = ret;
+            calls[number_of_gosub_calls].lc = lc;
+            number_of_gosub_calls++;            
+            lc = (Line*)target;
+            pc = (char*)&(target->code[0]);
             return ERR_OK_JUMP;
         } else {
             return ERR_GOSUB_DEPTH;
@@ -154,9 +164,11 @@ char _gosub(Line* line) {
     }
 }
 
-char _return(Line* line) {
+char _return() {
     if(number_of_gosub_calls>0) {
-        pc = calls[--number_of_gosub_calls];
+        number_of_gosub_calls--;
+        pc = calls[number_of_gosub_calls].pc;
+        lc = calls[number_of_gosub_calls].lc;
         return ERR_OK_JUMP;
     } else {
         return ERR_GOSUB_MISSING;
@@ -164,7 +176,7 @@ char _return(Line* line) {
     
 }
 
-char _int_constant(Line* line) {
+char _int_constant() {
     int* p = (int *)pc;
     Atom atom1;
     atom1.type = ATOM_INT;
@@ -174,7 +186,17 @@ char _int_constant(Line* line) {
     return err == 0 ? ERR_OK : ERR_STACK_FULL;
 }
 
-char _var(Line* line) {
+char _str_constant() {
+    char* p = (char *)pc;
+    Atom atom1;
+    atom1.type = ATOM_STRING;
+    atom1.string = p;
+    
+    char err = push(&eval_stack, atom1);
+    return err == 0 ? ERR_OK : ERR_STACK_FULL;
+}
+
+char _var() {
     char* name = (char*)pc;
     Atom atom1;
     char ret;
@@ -191,7 +213,7 @@ char _var(Line* line) {
 }
 
 //TODO reuse code for multiple expression operations
-char _add(Line* line) {
+char _add() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -209,7 +231,7 @@ char _add(Line* line) {
     return ERR_OK;
 }
 
-char _sub(Line* line) {
+char _sub() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -227,7 +249,7 @@ char _sub(Line* line) {
     return ERR_OK;
 }
 
-char _mul(Line* line) {
+char _mul() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -245,7 +267,7 @@ char _mul(Line* line) {
     return ERR_OK;
 }
 
-char _div(Line* line) {
+char _div() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -267,7 +289,7 @@ char _div(Line* line) {
     return ERR_OK;
 }
 
-char _less(Line* line) {
+char _less() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -289,7 +311,7 @@ char _less(Line* line) {
 }
 
 //TODO Seems that CPC Basic uses -1 as true and 0 as false ...
-char _greater(Line* line) {
+char _greater() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -310,7 +332,7 @@ char _greater(Line* line) {
     return ERR_OK;
 }
 
-char _min(Line* line) {
+char _min() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -328,7 +350,7 @@ char _min(Line* line) {
     return ERR_OK;
 }
 
-char _max(Line* line) {
+char _max() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -349,7 +371,7 @@ char _max(Line* line) {
 instr_impl* after_expr;
 char* after_name;
 
-char _let_(Line* line) {
+char _let_() {
     Atom atom1;
     char err = pop(&eval_stack, &atom1);
     if(err!=0 || eval_stack.stack_pos != 0) {
@@ -361,7 +383,7 @@ char _let_(Line* line) {
     return set_int_var(after_name, atom1.integer);
 }
 
-char _let(Line* line) {
+char _let() {
     //TODO Must be initialized all the times?
     stack_init(&eval_stack);
     after_expr = _let_;
@@ -369,20 +391,28 @@ char _let(Line* line) {
     return ERR_OK;
 }
 
-char _print_(Line* line) {
+char _print_() {
     Atom atom1;
     char err = pop(&eval_stack, &atom1);
     if(err!=0 || eval_stack.stack_pos != 0) {
         return ERR_BAD_SYNTAX;
     }
-    if(atom1.type!=ATOM_INT) {
-        return ERR_BAD_TYPE;
+    switch(atom1.type) {
+        case ATOM_INT:
+            printf("%d", atom1.integer);
+            break;
+        case ATOM_STRING:
+        case ATOM_TMP_STRING:
+            printf("%s", atom1.string);
+            break;
+        default:
+            return ERR_BAD_TYPE;
     }
-    printf("%d\r\n", atom1.integer);
+    printf("\r\n");
     return ERR_OK;
 }
 
-char _print(Line* line) {
+char _print() {
     //TODO Must be initialized all the times?
     stack_init(&eval_stack);
     after_expr = _print_;
@@ -397,7 +427,7 @@ char _end_of_expr(Line* line) {
 
 //TODO Do not pop but peek the eval stack for minimizing operations on stack
 
-char _pow(Line* line) {
+char _pow() {
     Atom atom1;
     Atom atom2;
     char err1 = pop(&eval_stack, &atom1);
@@ -413,7 +443,7 @@ char _pow(Line* line) {
     return ERR_OK;
 }
 
-char _sqrt(Line* line) {
+char _sqrt() {
     Atom atom1;
     char err1 = pop(&eval_stack, &atom1);
     
@@ -427,7 +457,7 @@ char _sqrt(Line* line) {
     return ERR_OK;
 }
 
-char _sgn(Line* line) {
+char _sgn() {
     Atom atom1;
     int n, ret;
     char err1 = pop(&eval_stack, &atom1);
@@ -451,7 +481,7 @@ char _sgn(Line* line) {
     return ERR_OK;
 }
 
-char _abs(Line* line) {
+char _abs() {
     Atom atom1;
     int n;
     char err1 = pop(&eval_stack, &atom1);

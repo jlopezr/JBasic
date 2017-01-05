@@ -36,12 +36,51 @@ enum ParamType {
     PARAM_STR_2_INT  // Function with one string + two integer
 };
 
+typedef struct {
+    char opcode;
+} Instr_Void;
+
+typedef struct {
+    char opcode;
+    int number;
+} Instr_Num;
+
+typedef struct {
+    char opcode;
+    //TODO Finish this
+} Instr_Text;
+
+typedef struct {
+    char opcode;
+    //TODO Finish this
+} Instr_Var;
+
+typedef struct {
+    char opcode;
+    //TODO Finish this. The pointer should move as we see different variables
+} Instr_Var_List;
+
+typedef struct {
+    char opcode;
+    int number;
+} Instr_Num_Opt;
+
+typedef struct {
+    char opcode;
+    //TODO Finish this
+} Instr_Text_Opt;
+
+typedef Instr_Text Instr_Assign;
+typedef Instr_Void Instr_Expr;       // Expressions must be executed...
+typedef Instr_Void Instr_Expr_List;  // TODO Specific END_OF_LIST must be added to implement this
+typedef Instr_Void Instr_1_Int;      // All the function opcodes in reality do not read anything from the program, everything is on the stack.
+
 //TODO Change the instruction format. Add a LINE token that keeps this information
 // This allows to find the start the start of line just in case, then
 // GOSUB/GOTO do not require to store the line + pc combo, only the pc
 // the line info can be found by looking for the token when needed
 // then the PARAM_ provide struct* to get easily the info from the code
-// Remove the length from this token, loops can be simplified
+// Remove the length from this token, loops can be simplified. Perhaps keep the
 // Typically line info is not used in instructions
 // Remove this parameter and make it global, we will have line and pc
 // line can be 0 that means that it should be looked up scanning from the pc
@@ -59,7 +98,7 @@ enum ParamType {
     --------------------------------------------------
 */
 
-typedef char instr_impl(Line* currentLine);
+typedef char instr_impl();
 
 typedef struct {
     char* name;
@@ -84,6 +123,8 @@ extern Keyword keywords[];
 #define KEYWORD_TABLE(ENTRY) \
 ENTRY(END,      0, 0, 0, PARAM_VOID,      _end)               \
 ENTRY(LET,      0, 0, 0, PARAM_ASSIGN,    _let)               \
+ENTRY(TRON,     0, 0, 0, PARAM_VOID,      tron)               \
+ENTRY(TROFF,    0, 0, 0, PARAM_VOID,      troff)              \
 ENTRY(PRINT,    0, 0, 0, PARAM_EXPR,      _print)             \
 ENTRY(INPUT,    0, 0, 0, PARAM_INPUT,     _not_implemented)   \
 ENTRY(AUTO,     1, 0, 0, PARAM_NUM_OPT,   _not_implemented)   \
@@ -103,7 +144,7 @@ ENTRY(THEN,     0, 0, 0, PARAM_VOID,      _not_implemented)   \
 ENTRY(ELSE,     0, 0, 0, PARAM_VOID,      _not_implemented)   \
 ENTRY(ENDIF,    0, 0, 0, PARAM_VOID,      _not_implemented)   \
 ENTRY(INT_K,    0, 1, 0, PARAM_NUM,       _int_constant)      \
-ENTRY(STR_K,    0, 1, 0, PARAM_TEXT,      _not_implemented)   \
+ENTRY(STR_K,    0, 1, 0, PARAM_TEXT,      _str_constant)      \
 ENTRY(VAR,      0, 1, 0, PARAM_VAR,       _var)               \
 ENTRY(ADD,      0, 1, 4, PARAM_VOID,      _add)               \
 ENTRY(SUB,      0, 1, 4, PARAM_VOID,      _sub)               \

@@ -237,6 +237,15 @@ int rpn_to_infix(Line* line, int i) {
                 //TODO Check ERROR
                 i=i+sizeof(int)+1;
                 break;
+            case STR_K:
+                //TODO When Expr is printed?
+                buf = (char*)(&line->code[i+1]);
+                a1.type = ATOM_STRING;
+                a1.string = buf;
+                ret = push(&input_stack, a1);
+                //TODO Check ERROR
+                i = i+(int)strlen(buf)+2;
+                break;
             case VAR:
                 //TODO JUAN MUST PUT IN THE INPUT STACK !!!!
                 buf = (char*)(&line->code[i+1]);

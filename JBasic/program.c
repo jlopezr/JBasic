@@ -7,15 +7,18 @@
 //
 
 #include <strings.h>
+#include <assert.h>
 #include "program.h"
 #include "keywords.h"
 #include "errors.h"
+#include "heap.h"
+#include "sym.h"
 
 char program[MAX_PROGRAM_SIZE];
 char* pc = &program[0];
 char* sop = &program[0];
 char* eop = &program[0];
-int lastLineNumber = 0;
+Line* lc = 0;
 
 Line* findLine(unsigned int lineNumber) {
     char* tmp;
@@ -63,6 +66,7 @@ void list_opcodes_line(Line* line) {
                 i=i+sizeof(unsigned int);
                 break;
             case PARAM_VAR:
+            case PARAM_TEXT:
                 i=i+1;
                 p2 = (char *)&(line->code[i]);
                 len = (int)strlen(p2);
@@ -79,8 +83,7 @@ void list_opcodes_line(Line* line) {
             default:
                 printf("<WHILE LISTING PARAM UNKNOWN>");
                 i=i+1;
-        }
-        
+        }        
     }
 }
 
@@ -97,60 +100,40 @@ void list_opcodes() {
     }
 }
 
-Line* lastLine;
+// Used for editing
+Line* lastLine = 0;
+// TODO lastLineNumber or equivalent variable can be updated when executing LINE token
+int lastLineNumber = 0;
 
-void addLine(char instruction) {
+void addLine() {
+    if(lastLine != 0) {
+        endLine();
+    }
     Line* line = (Line*)eop;
     lastLine = line;
     lastLineNumber = lastLineNumber + 10;
     line->lineNumber = lastLineNumber;
-    line->length = 1;
-    line->code[0] = instruction;
-    eop = eop + sizeof(unsigned int) + sizeof(char) + line->length;
-}
-
-void addLine_int(char instruction, unsigned int n) {
-    Line* line = (Line*)eop;
-    lastLine = line;
-    lastLineNumber = lastLineNumber + 10;
-    line->lineNumber = lastLineNumber;
-    line->length = 1 + sizeof(unsigned int);
-    line->code[0] = instruction;
-    unsigned int* p = (unsigned int *)&(line->code[1]);
-    *p = n;
-    eop = eop + sizeof(unsigned int) + sizeof(char) + line->length;
-}
-
-void addLine_string(char instruction, char* str) {
-    Line* line = (Line*)eop;
-    lastLine = line;
-    lastLineNumber = lastLineNumber + 10;
-    line->lineNumber = lastLineNumber;
-    line->code[0] = instruction;
-    char* p = (char *)&(line->code[1]);
-    char* q = stpcpy(p, str);
-    line->length = 2 + (q-p);
-    eop = eop + sizeof(unsigned int)+ sizeof(char) + line->length;
+    eop = eop + sizeof(unsigned int) + sizeof(char);
 }
 
 void endLine() {
     lastLine->length = (eop - (char*)lastLine) - sizeof(unsigned int) - sizeof(char);
+    lastLine = 0;
 }
 
-void addExpr_int(char opcode, int n) {
+void addOp(char opcode) {
+    *eop = opcode;
+    eop++;
+}
+
+void addIntOp(char opcode, int n) {
     *eop = opcode;
     int* p = (int *)(eop+1);
     *p = n;
     eop = eop + sizeof(char) + sizeof(int);
 }
 
-void addExpr_op(char opcode) {
-    *eop = opcode;
-    eop++;
-}
-
-
-void addExpr_string(char opcode, char* str) {
+void addStringOp(char opcode, char* str) {
     *eop = opcode;
     eop++;
     char* q = stpcpy(eop, str);
@@ -158,31 +141,65 @@ void addExpr_string(char opcode, char* str) {
 }
 
 unsigned char doTrace = 0;
+unsigned char doStep = 0;
+unsigned char doInstruction = 0;
+
+void reset() {
+    init_heap();
+    
+    pc = &program[0];
+    sop = &program[0];
+    eop = &program[0];
+    lc = 0;
+    
+    lastLine = 0;
+    lastLineNumber = 0;
+    
+    clear_int_vars();
+    clear_string_vars();
+}
+
+char tron() {
+    doTrace = 1;
+    return ERR_OK;
+}
+
+char troff() {
+    doTrace = 0;
+    return ERR_OK;
+}
 
 void run() {
     unsigned char end = 0;
+    unsigned char out = 0;
     
     pc = sop;
     while(pc<eop && !end) {
-        Line* line = (Line*)pc;
-        pc = (char*)&(line->code[0]);
-        char* eol = pc + (line->length);
         
-        while(pc<eol && !end) {
+        if(out==1) {
+            out = 0;
+        } else {
+            lc = (Line*)pc;
+            pc = (char*)&(lc->code[0]);
+        }
+        char* eol = pc + (lc->length);
+        out = 0;
+        
+        while(pc<eol && !end && !out) {
             Keyword k = keywords[*pc];
             instr_impl* impl = k.impl;
             
             if(doTrace) {
-                //printf("[%d %ld ", line->lineNumber, pc-sop);
-                printf("[%d ", line->lineNumber);
+                printf("[%d %ld %s", lc->lineNumber, pc-sop, k.name);
+                //printf("[%d ", lc->lineNumber);
             }
             
             if(impl==0) {
-                printf("OPCODE Not known in line %d\r\n", line->lineNumber);
+                printf("OPCODE %s Not known in line %d\r\n", k.name, lc->lineNumber);
                 break;
             } else {
                 pc++;
-                char result = impl(line);
+                char result = impl();
                 
                 if(doTrace) {
                     printf(" %d]", result);
@@ -200,6 +217,7 @@ void run() {
                                 pc=pc+sizeof(unsigned int);
                                 break;
                             case PARAM_VAR:
+                            case PARAM_TEXT:
                             case PARAM_ASSIGN:
                                 //TODO try recover this info from instruction execution... some use the pointer without copy... :(
                                 pc=pc+(int)strlen(pc)+1;
@@ -209,14 +227,13 @@ void run() {
                         }
                         break;
                     case ERR_OK_JUMP:
-                        // This makes exit the inner loop
-                        pc=eol;
+                        out = 1;
                         break;
                     case ERR_OK_END:
                         end = 1;
                         break;
                     default:
-                        printf("ERROR %s at line %d\r\n", errors[result], line->lineNumber);
+                        printf("ERROR %s at line %d\r\n", errors[result], lc->lineNumber);
                         end = 1;
                 }
             }

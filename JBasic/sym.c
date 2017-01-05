@@ -113,7 +113,7 @@ int* get_int_var(char*name) {
     }
 }
 
-void clear_ints_vars() {
+void clear_int_vars() {
     ints_used = 0;
 }
 
