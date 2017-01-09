@@ -38,6 +38,12 @@ void reset();
 void run();
 void list_opcodes();
 
+typedef char stepping_func();
+void step(stepping_func* step);
+char each_line();
+char on_line();
+void set_step_until_line(int line);
+
 extern char program[MAX_PROGRAM_SIZE];
 extern char* pc;    // program counter
 extern Line* lc;    // Line counter

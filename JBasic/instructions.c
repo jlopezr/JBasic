@@ -142,8 +142,6 @@ typedef struct {
 GosubState calls[NUM_GOSUB_CALLS];
 int number_of_gosub_calls = 0;
 
-//TODO GOSUB must be the last instruction on line ???
-//TODO GOSUB is the only instruction that uses the line pointer
 char _gosub() {
     unsigned int* p = (unsigned int *)pc;
     Line* target = findLine(*p);

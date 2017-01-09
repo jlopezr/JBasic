@@ -170,10 +170,38 @@ char troff() {
 }
 
 void run() {
+    step(0);
+}
+
+char each_line() {
+    static char step = 0;
+    if(step) {
+        step = 0;
+        return 1;
+    } else {
+        step = 1;
+        return 0;
+    }
+}
+
+int step_lineNumber;
+
+void set_step_until_line(int line) {
+    step_lineNumber = line;
+}
+
+char on_line() {
+    if(lc->lineNumber == step_lineNumber) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void step(stepping_func* step) {
     unsigned char end = 0;
     unsigned char out = 0;
     
-    pc = sop;
     while(pc<eop && !end) {
         
         if(out==1) {
@@ -184,6 +212,14 @@ void run() {
         }
         char* eol = pc + (lc->length);
         out = 0;
+        
+        if(step!=0) {
+            if(step()) {
+                //TODO remove this hack, goes back to the beginning of line
+                pc = (char*)lc;
+                return;
+            }
+        }
         
         while(pc<eol && !end && !out) {
             Keyword k = keywords[*pc];
@@ -242,4 +278,7 @@ void run() {
         //Instead of jumping to the next line, the code pointer is already on the new line
         //pc = pc + sizeof(unsigned int)+ sizeof(char)+ line->length;
     }
+    
+    // This puts PC at the beginning when the program ends
+    pc = eop;
 }

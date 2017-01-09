@@ -81,8 +81,8 @@ typedef Instr_Void Instr_1_Int;      // All the function opcodes in reality do n
 // the line info can be found by looking for the token when needed
 // then the PARAM_ provide struct* to get easily the info from the code
 // Remove the length from this token, loops can be simplified. Perhaps keep the
-// Typically line info is not used in instructions
-// Remove this parameter and make it global, we will have line and pc
+// * Typically line info is not used in instructions
+// * Remove this parameter and make it global, we will have line and pc
 // line can be 0 that means that it should be looked up scanning from the pc
 // backwards
 

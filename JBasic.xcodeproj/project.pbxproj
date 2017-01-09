@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0D1015431CE8CCD4007BB306 /* bsearch_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1015411CE8CCD4007BB306 /* bsearch_test.c */; };
 		0D1015461CE8E0C4007BB306 /* eval.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D1015441CE8E0C4007BB306 /* eval.c */; };
+		0D26AB051E1D204D00984513 /* tests.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D26AB041E1D204D00984513 /* tests.c */; };
 		0D86A15E1DE49F32004A16A7 /* eval_test.c in Sources */ = {isa = PBXBuildFile; fileRef = 0D86A15C1DE49F32004A16A7 /* eval_test.c */; };
 		0DC2E4311CDF94B400B9C82D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2E4301CDF94B400B9C82D /* main.c */; };
 		0DC2E4391CDFDD6300B9C82D /* heapsort.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DC2E4371CDFDD6300B9C82D /* heapsort.c */; };
@@ -39,6 +40,7 @@
 		0D1015411CE8CCD4007BB306 /* bsearch_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bsearch_test.c; path = JBasic/bsearch_test.c; sourceTree = SOURCE_ROOT; };
 		0D1015441CE8E0C4007BB306 /* eval.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = eval.c; sourceTree = "<group>"; };
 		0D1015451CE8E0C4007BB306 /* eval.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eval.h; sourceTree = "<group>"; };
+		0D26AB041E1D204D00984513 /* tests.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tests.c; sourceTree = "<group>"; };
 		0D86A15C1DE49F32004A16A7 /* eval_test.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = eval_test.c; sourceTree = "<group>"; };
 		0DC2E42D1CDF94B400B9C82D /* JBasic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = JBasic; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DC2E4301CDF94B400B9C82D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				0DC418081DE399D200EDA7BA /* sym_test.c */,
 				0DC418051DE3911B00EDA7BA /* sym.c */,
 				0DC418061DE3911B00EDA7BA /* sym.h */,
+				0D26AB041E1D204D00984513 /* tests.c */,
 			);
 			path = JBasic;
 			sourceTree = "<group>";
@@ -175,6 +178,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0D26AB051E1D204D00984513 /* tests.c in Sources */,
 				0DCA123B1DEE3E180095545E /* heap.c in Sources */,
 				0DC418101DE3A82400EDA7BA /* program.c in Sources */,
 				0DC2E4311CDF94B400B9C82D /* main.c in Sources */,

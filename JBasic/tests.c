@@ -91,15 +91,133 @@ static char * test_main_expression2() {
     p = get_int_var("N");
     mu_assert("Variable N must have a value", p != 0);
     mu_assert("Variable N must have a 16", *p == 2);
+    
     return 0;
 }
 
+static char * test_main_goto() {
+    reset();
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 1);
+    addOp(END_EXPR);
+    
+    addLine();
+    addIntOp(GOTO, 40);
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 2);
+    addOp(END_EXPR);
+    
+    addLine();
+    addOp(END);
+    endLine();
+    
+    run();
+    
+    int* p = get_int_var("V");
+    mu_assert("Variable V must have a value", p != 0);
+    mu_assert("Variable V must have a 1", *p == 1);
+    
+    return 0;
+}
 
+static char * test_main_gosub() {
+    reset();
+
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 0);
+    addOp(END_EXPR);
+    
+    addLine();
+    addIntOp(GOSUB, 60);
+    addIntOp(GOSUB, 60);
+    addIntOp(GOSUB, 60);
+    
+    addLine();
+    addIntOp(GOSUB, 60);
+    addIntOp(GOSUB, 60);
+    
+    addLine();
+    addIntOp(GOSUB, 60);
+    
+    addLine();
+    addOp(END);
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 1);
+    addStringOp(VAR, "V");
+    addOp(ADD);
+    addOp(END_EXPR);
+    
+    addLine();
+    addOp(RETURN);
+    endLine();
+    
+    list_opcodes();
+    printf("____\r\n");
+    _list();
+    printf("____\r\n");
+    run();
+    
+    int* p = get_int_var("V");
+    mu_assert("Variable V must have a value", p != 0);
+    mu_assert("Variable V must have a 1", *p == 1);
+    
+    return 0;
+}
+
+static char * test_main_stepping() {
+    reset();
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 1);
+    addOp(END_EXPR);
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 2);
+    addOp(END_EXPR);
+    
+    addLine();
+    addStringOp(LET, "V");
+    addIntOp(INT_K, 3);
+    addOp(END_EXPR);
+    
+    addLine();
+    addOp(END);
+    endLine();
+    
+    step(each_line);
+    int* p = get_int_var("V");
+    mu_assert("1 Variable V must have a value", p != 0);
+    mu_assert("Variable V must have a 1", *p == 1);
+    
+    step(each_line);
+    p = get_int_var("V");
+    mu_assert("2 Variable V must have a value", p != 0);
+    mu_assert("Variable V must have a 2", *p == 2);
+    
+    run();
+    p = get_int_var("V");
+    mu_assert("3 Variable V must have a value", p != 0);
+    mu_assert("Variable V must have a 3", *p == 3);
+
+    return 0;
+}
 
 static char * all_tests_main() {
     mu_run_test(test_main_hello);
     mu_run_test(test_main_expression1);
     mu_run_test(test_main_expression2);
+    mu_run_test(test_main_goto);
+    //mu_run_test(test_main_gosub);
+    mu_run_test(test_main_stepping);
     return 0;
 }
 
