@@ -20,6 +20,8 @@ char* sop = &program[0];
 char* eop = &program[0];
 Line* lc = 0;
 
+///@param lineNumber line number of the line to search
+///@returns pointer to the line. NULL if not found
 Line* findLine(unsigned int lineNumber) {
     char* tmp;
     tmp = sop;
@@ -33,9 +35,10 @@ Line* findLine(unsigned int lineNumber) {
     return NULL;
 }
 
+/// Internal function to print the hexadecimal opcodes of a line
 void list_opcodes_hex(Line* line) {
     int i=0;
-    
+
     while(i<line->length) {
         printf("%x ", line->code[i]);
         i++;
@@ -43,12 +46,13 @@ void list_opcodes_hex(Line* line) {
     printf("\r\n");
 }
 
+/// Internal function to print the keywords that represent the tokens in a line
 void list_opcodes_line(Line* line) {
     int i=0;
     unsigned int* p;
     char* p2;
     int len;
-    
+
     while(i<line->length) {
         char opcode = line->code[i];
         printf("%s ",keywords[opcode].name);
@@ -83,7 +87,7 @@ void list_opcodes_line(Line* line) {
             default:
                 printf("<WHILE LISTING PARAM UNKNOWN>");
                 i=i+1;
-        }        
+        }
     }
 }
 
@@ -146,15 +150,15 @@ unsigned char doInstruction = 0;
 
 void reset() {
     init_heap();
-    
+
     pc = &program[0];
     sop = &program[0];
     eop = &program[0];
     lc = 0;
-    
+
     lastLine = 0;
     lastLineNumber = 0;
-    
+
     clear_int_vars();
     clear_string_vars();
 }
@@ -201,9 +205,9 @@ char on_line() {
 void step(stepping_func* step) {
     unsigned char end = 0;
     unsigned char out = 0;
-    
+
     while(pc<eop && !end) {
-        
+
         if(out==1) {
             out = 0;
         } else {
@@ -212,7 +216,7 @@ void step(stepping_func* step) {
         }
         char* eol = pc + (lc->length);
         out = 0;
-        
+
         if(step!=0) {
             if(step()) {
                 //TODO remove this hack, goes back to the beginning of line
@@ -220,16 +224,16 @@ void step(stepping_func* step) {
                 return;
             }
         }
-        
+
         while(pc<eol && !end && !out) {
             Keyword k = keywords[*pc];
             instr_impl* impl = k.impl;
-            
+
             if(doTrace) {
                 printf("[%d %ld %s", lc->lineNumber, pc-sop, k.name);
                 //printf("[%d ", lc->lineNumber);
             }
-            
+
             if(impl==0) {
                 printf("OPCODE %s Not known in line %d\r\n", k.name, lc->lineNumber);
                 break;

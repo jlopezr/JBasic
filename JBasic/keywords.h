@@ -12,28 +12,29 @@
 #include <stdio.h>
 #include "program.h"
 
+/// This enumeration encodes the parameters that the BASIC keyword has.
 enum ParamType {
-    PARAM_VOID,      // Nothing
-    PARAM_NUM,       // A constant number (used in token INT_K)
-    PARAM_TEXT,      // A constant string (used in token STR_K)
-    PARAM_VAR,       // A variable identifier
-    PARAM_VAR_LIST,  // A list of variables (used in token READ)
-    PARAM_EXPR,      // An expression
-    PARAM_EXPR_LIST, // An list of expressions (similiar to PRINT, but only separated by "," should used by MAX, MIN..)
-    PARAM_ASSIGN,    // An assignation (identifier = expression)
-    PARAM_NUM_OPT,   // An optional number
-    PARAM_VAR_OPT,   // An optional variable identifier
-    PARAM_LIST,      // None | num | num - num
-    PARAM_PRINT,     // N expressions split by ; or ,
-    PARAM_DATA,      // N constant expressions split by , (i.e numbers or texts")
-    PARAM_INPUT,     // A variable or "text", variable
-    PARAM_1_INT,     // Function with one integer
-    PARAM_2_INT,     // Function with two integer
-    PARAM_1_STR,     // Function with one string
-    PARAM_2_STR,     // Function with one string
-    PARAM_STR_INT,   // Function with one string + one integer
-    PARAM_INT_STR,   // Function with one integer + one string
-    PARAM_STR_2_INT  // Function with one string + two integer
+    PARAM_VOID,      ///< Nothing
+    PARAM_NUM,       ///< A constant number (used in token INT_K)
+    PARAM_TEXT,      ///< A constant string (used in token STR_K)
+    PARAM_VAR,       ///< A variable identifier
+    PARAM_VAR_LIST,  ///< A list of variables (used in token READ)
+    PARAM_EXPR,      ///< An expression
+    PARAM_EXPR_LIST, ///< An list of expressions (similiar to PRINT, but only separated by "," should used by MAX, MIN..)
+    PARAM_ASSIGN,    ///< An assignation (identifier = expression)
+    PARAM_NUM_OPT,   ///< An optional number
+    PARAM_VAR_OPT,   ///< An optional variable identifier
+    PARAM_LIST,      ///< None | num | num - num
+    PARAM_PRINT,     ///< N expressions split by ; or ,
+    PARAM_DATA,      ///< N constant expressions split by , (i.e numbers or texts")
+    PARAM_INPUT,     ///< A variable or "text", variable
+    PARAM_1_INT,     ///< Function with one integer
+    PARAM_2_INT,     ///< Function with two integer
+    PARAM_1_STR,     ///< Function with one string
+    PARAM_2_STR,     ///< Function with one string
+    PARAM_STR_INT,   ///< Function with one string + one integer
+    PARAM_INT_STR,   ///< Function with one integer + one string
+    PARAM_STR_2_INT  ///< Function with one string + two integer
 };
 
 typedef struct {
@@ -98,15 +99,17 @@ typedef Instr_Void Instr_1_Int;      // All the function opcodes in reality do n
     --------------------------------------------------
 */
 
+/// Definition of a keyword implementation
 typedef char instr_impl();
 
+/// This structure defines a keyword and how has to be executed and listed
 typedef struct {
-    char* name;
-    unsigned char onlyCLI : 1;
-    unsigned char expression: 1;
-    unsigned char priority: 4;
-    unsigned char parameters;
-    instr_impl* impl;
+    char* name;                  ///< Text representation of the keyword
+    unsigned char onlyCLI : 1;   ///< Is this keyword only in command line mode, ie. EDIT or AUTO?
+    unsigned char expression: 1; ///< Is this keyword used in expressions?
+    unsigned char priority: 4;   ///< Priority of this keyword in a expression
+    unsigned char parameters;    ///< Number and type of the parameters. See ::ParamType
+    instr_impl* impl;            ///< Pointer to the keyword implementation function
 } Keyword;
 
 extern Keyword keywords[];

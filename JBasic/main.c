@@ -14,6 +14,10 @@
 #include "instructions.h"
 #include "errors.h"
 
+/**
+ * This is the main file of JBasic.
+ */
+
 // Parser
 void parse(char* input) {
     char* buffer;

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "program.h"
 
+/// Maximum number of nested gosub calls
 #define NUM_GOSUB_CALLS  5
 
 char _end();
