@@ -42,6 +42,8 @@ void parse(char* input) {
 
 int main(int argc, const char * argv[]) {
 
+    //printf("SIZEOF LINE %ld\n",sizeof(Line));
+    
     test_main();
         
     return 0;

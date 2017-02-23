@@ -273,7 +273,7 @@ void step(stepping_func* step) {
                         end = 1;
                         break;
                     default:
-                        printf("ERROR %s at line %d\r\n", errors[result], lc->lineNumber);
+                        printf("ERR> %s at line %d\r\n", errors[result], lc->lineNumber);
                         end = 1;
                 }
             }
